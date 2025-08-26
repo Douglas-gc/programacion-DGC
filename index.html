@@ -102,8 +102,13 @@
         </div>
     </div>
 
+    <audio id="bgMusic" src="sonidos/intro.mp3" loop preload="auto"></audio>
+    <!-- JS externo para la música -->
+<script src="script/fondo.js" defer></script>
+
     <!-- Floating Sports Elements -->
     <div class="floating-elements" id="floatingElements"></div>
+
 
     <!-- Three.js Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -126,7 +131,6 @@
         setupLighting();
         setupSkybox();
         setupInteractions();
-        // ❌ setupIntroAudio();  // ya no lo llamamos aquí
         createFloatingSportsElements();
         hideLoadingScreen();
         animate();
@@ -237,38 +241,6 @@
         if (reject) reject(error);
     });
 }
-
-// // // para el audio
-function setupIntroAudio() {
-    // Crear un listener de audio y agregarlo a la cámara
-     const listener = new THREE.AudioListener();
-     camera.add(listener);
-
-     // Crear el objeto de sonido
-     const sound = new THREE.Audio(listener);
-
-     // Cargar el archivo mp3
-     const audioLoader = new THREE.AudioLoader();
-     audioLoader.load('intro.mp3', (buffer) => {
-         sound.setBuffer(buffer);
-         sound.setLoop(true);    // Música en bucle
-         sound.setVolume(0.5);   // Ajusta el volumen (0.0 a 1.0)
-         sound.play();
-     });
-
-     // Guardar en variable global para controlarlo después si quieres (pausar, stop, etc.)
-     window.bgMusic = sound;
- }
-
- window.addEventListener("click", () => {
-     if (!window.audioStarted) {
-         setupIntroAudio();
-         window.audioStarted = true;
-         console.log("🎵 Música iniciada");
-     }
- }, { once: true });
-
-
 
 
         // Setup lighting system
