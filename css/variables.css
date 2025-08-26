@@ -1,0 +1,39 @@
+/* Variables globales - Paleta de colores */
+
+:root {
+  /* Colores principales */
+  --primary-blue: #2196F3;
+  --secondary-blue: #1976D2;
+  --light-blue: #64B5F6;
+  --sky-blue: #87CEEB;
+  --dark-blue: #0D47A1;
+  --cyan: #00BCD4;
+  --teal: #009688;
+  --white: #FFFFFF;
+  --light-gray: #F5F5F5;
+  --dark-gray: #424242;
+  
+  /* Colores de acento */
+  --accent-orange: #FF7043;
+  --accent-green: #4CAF50;
+  --accent-purple: #9C27B0;
+  --accent-gold: #FFD700;
+  --accent-silver: #C0C0C0;
+  
+  /* Gradientes temáticos */
+  --warm-gradient: linear-gradient(135deg, #FF7043, #FFB74D);
+  --success-gradient: linear-gradient(135deg, #4CAF50, #81C784);
+  --premium-gradient: linear-gradient(135deg, #9C27B0, #BA68C8);
+  
+  /* Gradientes principales */
+  --gradient-primary: linear-gradient(135deg, #2196F3, #21CBF3);
+  --gradient-secondary: linear-gradient(135deg, #1976D2, #42A5F5);
+  --gradient-sky: linear-gradient(180deg, #87CEEB, #B0E0E6);
+  
+  /* Gradientes específicos para navbar */
+  --navbar-gradient: linear-gradient(135deg, #1976D2 0%, #2196F3 50%, #FF7043 100%);
+  --navbar-hover: linear-gradient(135deg, #4CAF50, #81C784);
+  
+  /* Sombras y efectos */
+  --shadow: rgba(33, 150, 243, 0.3);
+}

@@ -1,0 +1,77 @@
+/* Estilos base y globales */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--gradient-sky);
+  overflow-x: hidden;
+  color: var(--dark-blue);
+  line-height: 1.6;
+}
+
+/* Canvas Container */
+#canvasContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
+}
+
+/* Scrollbar Styling */
+.ui-overlay::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ui-overlay::-webkit-scrollbar-track {
+  background: rgba(100, 181, 246, 0.1);
+  border-radius: 4px;
+}
+
+.ui-overlay::-webkit-scrollbar-thumb {
+  background: var(--light-blue);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.ui-overlay::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-blue);
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus styles for keyboard navigation */
+.nav-link:focus,
+.close-btn:focus {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --shadow: rgba(0, 0, 0, 0.8);
+  }
+  
+  .ui-overlay {
+    border: 3px solid var(--primary-blue);
+  }
+  
+  .match-item,
+  .ticket-tier {
+    border-width: 3px;
+  }
+}

@@ -1,0 +1,148 @@
+/* Overlays y ventanas emergentes */
+
+.ui-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px var(--shadow);
+  border: 2px solid rgba(33, 150, 243, 0.2);
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.ui-overlay.show {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  visibility: visible;
+}
+
+.ui-overlay h3 {
+  color: var(--primary-blue);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: var(--light-blue);
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  background: var(--primary-blue);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 4px 15px var(--shadow);
+}
+
+/* Match Items */
+.match-item {
+  background: var(--gradient-secondary);
+  color: var(--white);
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  border-left: 5px solid var(--cyan);
+  position: relative;
+  overflow: hidden;
+}
+
+.match-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transition: right 0.3s ease;
+}
+
+.match-item:hover::before {
+  right: 0;
+}
+
+.match-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 8px 25px var(--shadow);
+}
+
+.match-teams {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.match-datetime {
+  font-size: 1rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* Ticket Tiers */
+.ticket-tier {
+  background: rgba(100, 181, 246, 0.1);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  border: 2px solid var(--light-blue);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.ticket-tier:hover {
+  background: rgba(33, 150, 243, 0.15);
+  border-color: var(--primary-blue);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px var(--shadow);
+}
+
+.tier-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary-blue);
+  margin-bottom: 8px;
+}
+
+.tier-price {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--secondary-blue);
+  margin-bottom: 10px;
+}
+
+.tier-benefits {
+  color: var(--dark-blue);
+  font-weight: 500;
+  line-height: 1.6;
+}
