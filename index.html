@@ -119,24 +119,26 @@
         let loader;
 
         // Initialize the application
-        async function init() {
-            try {
-                await setupScene();
-                await loadStadium();
-                setupLighting();
-                setupSkybox();
-                setupInteractions();
-                setupIntroAudio();
-                createFloatingSportsElements();
-                hideLoadingScreen();
-                animate();
-                updateNextMatchDate();
-            } catch (error) {
-                console.error('Initialization failed:', error);
-                hideLoadingScreen();
-                showError('Error loading stadium model. Please check if estadio.glb exists in the same directory.');
-            }
-        }
+     async function init() {
+    try {
+        await setupScene();
+        await loadStadium();
+        setupLighting();
+        setupSkybox();
+        setupInteractions();
+        // ❌ setupIntroAudio();  // ya no lo llamamos aquí
+        createFloatingSportsElements();
+        hideLoadingScreen();
+        animate();
+        updateNextMatchDate();
+    } catch (error) {
+        console.error('Initialization failed:', error);
+        hideLoadingScreen();
+        showError('Error loading stadium model. Please check if estadio.glb exists in the same directory.');
+    }
+}
+
+
 
         // Setup Three.js scene
         function setupScene() {
@@ -235,6 +237,39 @@
         if (reject) reject(error);
     });
 }
+
+// // // para el audio
+function setupIntroAudio() {
+    // Crear un listener de audio y agregarlo a la cámara
+     const listener = new THREE.AudioListener();
+     camera.add(listener);
+
+     // Crear el objeto de sonido
+     const sound = new THREE.Audio(listener);
+
+     // Cargar el archivo mp3
+     const audioLoader = new THREE.AudioLoader();
+     audioLoader.load('intro.mp3', (buffer) => {
+         sound.setBuffer(buffer);
+         sound.setLoop(true);    // Música en bucle
+         sound.setVolume(0.5);   // Ajusta el volumen (0.0 a 1.0)
+         sound.play();
+     });
+
+     // Guardar en variable global para controlarlo después si quieres (pausar, stop, etc.)
+     window.bgMusic = sound;
+ }
+
+ window.addEventListener("click", () => {
+     if (!window.audioStarted) {
+         setupIntroAudio();
+         window.audioStarted = true;
+         console.log("🎵 Música iniciada");
+     }
+ }, { once: true });
+
+
+
 
         // Setup lighting system
         function setupLighting() {
