@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prueba Layout 3 Columnas</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #eef2f3;
+    }
+
+    header {
+      background: linear-gradient(to right, #2196f3, #f44336);
+      padding: 15px;
+      text-align: center;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr; /* 3 columnas */
+      gap: 20px;
+      padding: 20px;
+      min-height: 80vh;
+    }
+
+    .left-panel, .right-panel, .center-panel {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .center-panel {
+      background: #ddd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <header>Estadio Irineo Pimentel Rojas</header>
+  
+  <div class="main">
+    <div class="left-panel">
+      <h2>Panel Izquierdo</h2>
+      <p>Aquí va información de Irineo Pimentel.</p>
+    </div>
+
+    <div class="center-panel">
+      <p>Modelo 3D Aquí</p>
+    </div>
+
+    <div class="right-panel">
+      <h2>Panel Derecho</h2>
+      <p>Aquí va la historia del estadio.</p>
+    </div>
+  </div>
+</body>
+</html>

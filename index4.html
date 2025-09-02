@@ -4,18 +4,125 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estadio</title>
-    <!-- <link rel="stylesheet" href="style3.css"> -->
-    <!-- <link rel="stylesheet" href="menubar.css"> -->
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/loading.css">
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/infopanel.css">
-    <link rel="stylesheet" href="css/overlays.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/responsive.css">
+    <style>
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+    header {
+      background: linear-gradient(to right, #2196f3, #f44336);
+      padding: 15px;
+      text-align: center;
+      color: white;
+      font-size: 1.5rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Contenedor de la escena 3D */
+    #scene-container {
+  width: 100%;
+  height: 100%;
+  position: relative; /* Para poder poner paneles encima */
+}
+#three-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+    /* Paneles flotantes */
+    .panel {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 250px;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      z-index: 5;
+    }
+
+    .left-panel {
+      left: 20px;
+    }
+
+    .right-panel {
+      right: 20px;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .panel p {
+      font-size: 0.9rem;
+      color: #555;
+    }
+    .overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.7);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+/* Ajustes en móvil */
+@media (max-width: 768px) {
+  .panel {
+    width: 180px;       /* Menor ancho */
+    padding: 10px;      /* Menor padding */
+    top: auto;          /* Quitamos el centrado vertical */
+    bottom: 10px;       /* Los llevamos al fondo */
+    transform: none;    /* Quitamos translateY */
+  }
+
+  .left-panel {
+    left: 10px;
+  }
+
+  .right-panel {
+    right: 10px;
+  }
+}
+@media (max-width: 768px) {
+  .overlay {
+    font-size: 12px;
+    padding: 5px;
+    top: 5px;         /* Dejamos un pequeño margen superior */
+    left: 5px;
+    right: 5px;
+  }
+}
+
+
+  </style>
 </head>
 <body>
+     <!-- Three.js Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- GLTFLoader -->
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
+
     <!-- Loading Screen -->
     <div id="loadingScreen">
         <div class="loading-spinner"></div>
@@ -31,11 +138,11 @@
                 <span class="logo-text">Estadio Irineo Pimentel Rojas</span>
             </div>
             <ul class="nav-menu">
-                <li><a href="#" class="nav-link active">Inicio</a></li>
-                <li><a href="#" class="nav-link">Partidos</a></li>
+                <li><a href="index.html" class="nav-link active">Inicio</a></li>
+                <li><a href="index.html" class="nav-link">Partidos</a></li>
                 <li><a href="#" class="nav-link">Entradas</a></li>
                 <li><a href="#" class="nav-link">Galeria</a></li>
-                <li><a href="#" class="nav-link">Historia</a></li>
+                <li><a href="index4.html" class="nav-link">Historia</a></li>
             </ul>
             <div class="nav-toggle">
                 <span></span>
@@ -44,69 +151,48 @@
             </div>
         </div>
     </nav>
-
-    <!-- Main Canvas -->
-    <div id="canvasContainer"></div>
-
-    <!-- Info Panel -->
-    <div class="info-panel">
-        <div class="scoreboard">
-            <div class="next-match">Cargando Estadio...</div>
-            <div class="match-date" id="nextMatchDate">Loading...</div>
-        </div>
-        <div class="stadium-info">
-            <p>🏟️ Capacidad: 80,000</p>
-            <p>📍 presiona el estadio</p>
-        </div>
+    
+   <header>Estadio Irineo Pimentel Rojas</header>
+  
+  <div id="scene-container">
+    <!-- Panel Izquierdo -->
+    <div class="panel left-panel">
+       <img src="img/irineo.jpeg" alt="Irineo Pimentel Rojas">
+  <h2>Irineo Pimentel Rojas</h2>
+  <p>Irineo Pimentel Rojas fue una figura clave en el desarrollo del deporte local. 
+  Su pasión por el fútbol y la gestión deportiva impulsaron la creación del estadio 
+  que hoy lleva su nombre.</p>
     </div>
 
-    <!-- UI Overlays -->
-    <div id="matchesOverlay" class="ui-overlay">
-        <button class="close-btn">&times;</button>
-        <h3>⚽ Calendario de Partidos</h3>
-        <div id="matchList">
-            <div class="match-item">
-                <div class="match-teams">🔵 Equipo Local vs Barcelona 🔴</div>
-                <div class="match-datetime">March 15, 2025 - 8:00 PM</div>
-            </div>
-            <div class="match-item">
-                <div class="match-teams">🔵 Equipo Local vs Real Madrid ⚪</div>
-                <div class="match-datetime">March 22, 2025 - 9:00 PM</div>
-            </div>
-            <div class="match-item">
-                <div class="match-teams">🔵 Equipo Local vs Liverpool 🔴</div>
-                <div class="match-datetime">April 3, 2025 - 7:30 PM</div>
-            </div>
-        </div>
+    <!-- Panel Derecho -->
+    <div class="panel right-panel">
+       <h2>Historia del Estadio</h2>
+  <p>El Estadio Irineo Pimentel Rojas fue inaugurado en 1985 como un símbolo del crecimiento 
+  deportivo en la región. Con capacidad para más de 10,000 personas, ha sido sede de 
+  importantes encuentros y eventos culturales a lo largo de los años.</p>
     </div>
 
-    <div id="ticketsOverlay" class="ui-overlay">
-        <button class="close-btn">&times;</button>
-        <h3>🎫 Información de Entradas</h3>
-        <div id="ticketInfo">
-            <div class="ticket-tier">
-                <div class="tier-name">👑 Zona VIP</div>
-                <div class="tier-price">$150 - $250</div>
-                <div class="tier-benefits">• Asientos premium • Acceso a sala VIP • Bebidas gratis</div>
-            </div>
-            <div class="ticket-tier">
-                <div class="tier-name">⭐ Asientos Premium</div>
-                <div class="tier-price">$80 - $120</div>
-                <div class="tier-benefits">• Excelente vista • Asientos cómodos • Snacks del estadio</div>
-            </div>
-            <div class="ticket-tier">
-                <div class="tier-name">🎟️ Entrada General</div>
-                <div class="tier-price">$35 - $55</div>
-                <div class="tier-benefits">• Asientos estándar • Acceso completo al estadio</div>
-            </div>
-        </div>
-    </div>
+    <!-- Aquí irá tu Canvas o modelo 3D -->
+    <canvas id="three-canvas" style="width:100%; height:100%; display:block;"></canvas>
+  </div>
+
+
+
+
+    <audio id="bgMusic" src="sonidos/intro.mp3" loop preload="auto"></audio>
 
     <!-- Floating Sports Elements -->
     <div class="floating-elements" id="floatingElements"></div>
 
-    <!-- Three.js Script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+   
+    
+    <!-- JS externo para la música -->
+    <script src="script/fondo.js" defer></script>
+    <!-- JS separados -->
+    <script src="script/background.js" defer></script>
+    <script src="script/floatingElements.js" defer></script>
+    <script src="script/navbar.js" defer></script>
+    
     <script>
         // Global variables
         let scene, camera, renderer;
@@ -114,6 +200,7 @@
         let rotationSpeed = 0.003;
         let introAudio;
         let audioPlayed = false;
+        let loader;
 
         // Initialize the application
         async function init() {
@@ -123,349 +210,133 @@
                 setupLighting();
                 setupSkybox();
                 setupInteractions();
-                setupIntroAudio();
                 createFloatingSportsElements();
                 hideLoadingScreen();
                 animate();
-                updateNextMatchDate();
             } catch (error) {
                 console.error('Initialization failed:', error);
                 hideLoadingScreen();
+                showError('Error loading stadium model. Please check if estadio.glb exists in the same directory.');
             }
         }
 
         // Setup Three.js scene
         function setupScene() {
-            scene = new THREE.Scene();
-            scene.fog = new THREE.Fog(0x87CEEB, 200, 800);
+  scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0xf0f0f0, 100, 500);
 
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-            camera.position.set(0, 80, 150);
+  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.set(0, 10, 50);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            renderer.setClearColor(0x87CEEB, 1);
+  const canvas = document.getElementById("three-canvas");
+  renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    alpha: true,
+    canvas: canvas
+  });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.setClearColor(0xf0f0f0, 1);
+}
 
-            document.getElementById('canvasContainer').appendChild(renderer.domElement);
-        }
-
-        // Load stadium model (procedural generation)
+        // Load stadium model from GLB file
         async function loadStadium() {
-            updateLoadingProgress(20);
-            
-            const stadiumGroup = new THREE.Group();
-            
-            // Create field
-            const fieldGeometry = new THREE.PlaneGeometry(100, 60);
-            const fieldMaterial = new THREE.MeshLambertMaterial({ 
-                color: 0x2d5016,
-                map: createFieldTexture()
+            return new Promise((resolve, reject) => {
+                updateLoadingProgress(20);
+                
+                push_modelGLB_not_animed(0, 0, 0, 'models/irineo.glb', 37, 37,37, 0, 0, 0, resolve, reject);
             });
-            const field = new THREE.Mesh(fieldGeometry, fieldMaterial);
-            field.rotation.x = -Math.PI / 2;
-            field.receiveShadow = true;
-            field.userData = { type: 'field' };
-            stadiumGroup.add(field);
-            
-            updateLoadingProgress(40);
-
-            // Create stands
-            createStands(stadiumGroup);
-            updateLoadingProgress(60);
-
-            // Create roof structure
-            createRoof(stadiumGroup);
-            updateLoadingProgress(80);
-
-            // Create entrance gates
-            createEntrances(stadiumGroup);
-            
-            stadium = stadiumGroup;
-            scene.add(stadium);
-            updateLoadingProgress(100);
         }
 
-        function createFieldTexture() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 512;
-            const ctx = canvas.getContext('2d');
-            
-            // Create grass texture with stripes
-            for (let i = 0; i < 512; i += 32) {
-                ctx.fillStyle = i % 64 === 0 ? '#2d5016' : '#3d6026';
-                ctx.fillRect(i, 0, 32, 512);
-            }
-            
-            // Add field markings
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(50, 50, 412, 412);
-            ctx.beginPath();
-            ctx.arc(256, 256, 80, 0, Math.PI * 2);
-            ctx.stroke();
-            
-            return new THREE.CanvasTexture(canvas);
-        }
-
-        function createStands(group) {
-            const colors = [0x4A90E2, 0x5BA3F5, 0x357ABD, 0x2E6BA8];
-            
-            // Create four stands around the field
-            for (let i = 0; i < 4; i++) {
-                const standGeometry = new THREE.BoxGeometry(120, 30, 20);
-                const standMaterial = new THREE.MeshLambertMaterial({ color: colors[i] });
-                const stand = new THREE.Mesh(standGeometry, standMaterial);
+        function push_modelGLB_not_animed(posx=0, posy=0, posz=0, url, sizeX=1, sizeY=1, sizeZ=1, rotx=0, roty=0, rotz=0, resolve, reject) {
+            const loader = new THREE.GLTFLoader();
+            loader.load(url, function(gltf) {
+                updateLoadingProgress(60);
                 
-                const angle = (i * Math.PI) / 2;
-                const radius = 80;
-                stand.position.x = Math.cos(angle) * radius;
-                stand.position.z = Math.sin(angle) * radius;
-                stand.position.y = 15;
-                stand.rotation.y = angle + Math.PI / 2;
-                stand.castShadow = true;
-                stand.receiveShadow = true;
-                stand.userData = { type: 'stand', section: `Section ${String.fromCharCode(65 + i)}` };
+                const model = gltf.scene;
+                const modelGroup = new THREE.Group();
                 
-                group.add(stand);
+                const box = new THREE.Box3().setFromObject(model);
+                const center = box.getCenter(new THREE.Vector3());
                 
-                // Add seats details
-                createSeats(stand, group, angle, colors[i]);
-            }
-        }
+                model.position.sub(center);
+                modelGroup.add(model);
+                // Posición del modelo centrado y derecho
+                modelGroup.scale.set(sizeX, sizeY, sizeZ);
+                modelGroup.rotation.set(0, 0, 0); // Sin rotación para mantener posición original
+                modelGroup.position.set(posx, -3, posz); // Bajar un poco para centrar mejor
+                
+                model.traverse(function(child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
 
-        function createSeats(stand, group, angle, color) {
-            const seatsGroup = new THREE.Group();
-            const seatGeometry = new THREE.BoxGeometry(1, 0.5, 1);
-            const seatMaterial = new THREE.MeshLambertMaterial({ color: color });
-            
-            for (let row = 0; row < 15; row++) {
-                for (let seat = 0; seat < 30; seat++) {
-                    const seatMesh = new THREE.Mesh(seatGeometry, seatMaterial);
-                    seatMesh.position.x = (seat - 15) * 2;
-                    seatMesh.position.y = row * 1.5;
-                    seatMesh.position.z = -8;
-                    seatsGroup.add(seatMesh);
-                }
-            }
-            
-            seatsGroup.position.copy(stand.position);
-            seatsGroup.rotation.y = angle + Math.PI / 2;
-            group.add(seatsGroup);
-        }
+                        if (!child.material.map) {
+                            child.material.color = new THREE.Color(0x4A90E2);
+                        }
+                    }
+                });
 
-        function createRoof(group) {
-            const roofGeometry = new THREE.CylinderGeometry(140, 140, 5, 32, 1, true);
-            const roofMaterial = new THREE.MeshLambertMaterial({ 
-                color: 0x6BB6FF,
-                transparent: true,
-                opacity: 0.3,
-                side: THREE.DoubleSide
+                stadium = modelGroup;
+                scene.add(stadium);
+                updateLoadingProgress(100);
+                
+                if (resolve) resolve();
+            }, function(progress) {
+                const percentComplete = (progress.loaded / progress.total) * 40 + 20;
+                updateLoadingProgress(Math.min(percentComplete, 60));
+            }, function(error) {
+                console.error('Error cargando GLB:', error);
+                if (reject) reject(error);
             });
-            const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-            roof.position.y = 50;
-            roof.castShadow = true;
-            group.add(roof);
-
-            // Add support pillars
-            for (let i = 0; i < 8; i++) {
-                const pillarGeometry = new THREE.CylinderGeometry(2, 2, 45);
-                const pillarMaterial = new THREE.MeshLambertMaterial({ color: 0x4A90E2 });
-                const pillar = new THREE.Mesh(pillarGeometry, pillarMaterial);
-                
-                const angle = (i * Math.PI) / 4;
-                pillar.position.x = Math.cos(angle) * 120;
-                pillar.position.z = Math.sin(angle) * 120;
-                pillar.position.y = 22.5;
-                pillar.castShadow = true;
-                group.add(pillar);
-            }
         }
 
-        function createEntrances(group) {
-            // Create main entrances
-            for (let i = 0; i < 4; i++) {
-                const entranceGeometry = new THREE.BoxGeometry(15, 20, 8);
-                const entranceMaterial = new THREE.MeshLambertMaterial({ color: 0x2196F3 });
-                const entrance = new THREE.Mesh(entranceGeometry, entranceMaterial);
-                
-                const angle = (i * Math.PI) / 2 + Math.PI / 4;
-                const radius = 110;
-                entrance.position.x = Math.cos(angle) * radius;
-                entrance.position.z = Math.sin(angle) * radius;
-                entrance.position.y = 10;
-                entrance.castShadow = true;
-                entrance.userData = { type: 'entrance', name: `Gate ${i + 1}` };
-                
-                group.add(entrance);
-            }
-        }
-
-        // Setup lighting system
+        // Setup lighting system para personaje
         function setupLighting() {
-            // Ambient light
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            // Luz ambiente suave pero suficiente
+            const ambientLight = new THREE.AmbientLight(0xffffff, 3);
             scene.add(ambientLight);
 
-            // Directional light (sun)
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(100, 100, 50);
-            directionalLight.castShadow = true;
-            directionalLight.shadow.mapSize.width = 2048;
-            directionalLight.shadow.mapSize.height = 2048;
-            directionalLight.shadow.camera.near = 0.5;
-            directionalLight.shadow.camera.far = 500;
-            directionalLight.shadow.camera.left = -200;
-            directionalLight.shadow.camera.right = 200;
-            directionalLight.shadow.camera.top = 200;
-            directionalLight.shadow.camera.bottom = -200;
-            scene.add(directionalLight);
-        }
+            // Luz principal desde el frente (como en model viewer)
+            const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            mainLight.position.set(0, 100, 100);
+            mainLight.castShadow = true;
+            mainLight.shadow.mapSize.width = 2048;
+            mainLight.shadow.mapSize.height = 2048;
+            scene.add(mainLight);
 
-        // Setup skybox
-        function setupSkybox() {
-            const skyGeometry = new THREE.SphereGeometry(1000, 32, 32);
-            const skyMaterial = new THREE.MeshBasicMaterial({
-                color: 0x87CEEB,
-                side: THREE.BackSide
-            });
-            const sky = new THREE.Mesh(skyGeometry, skyMaterial);
-            scene.add(sky);
+            // Luz de relleno desde atrás para eliminar sombras duras
+            const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            fillLight.position.set(0, 50, -100);
+            scene.add(fillLight);
+
+            // Luz lateral suave
+            const sideLight = new THREE.DirectionalLight(0xffffff, 0.3);
+            sideLight.position.set(100, 50, 0);
+            scene.add(sideLight);
         }
 
         // Setup interactions
         function setupInteractions() {
-            const raycaster = new THREE.Raycaster();
-            const mouse = new THREE.Vector2();
-
-            renderer.domElement.addEventListener('click', (event) => {
-                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-                raycaster.setFromCamera(mouse, camera);
-                const intersects = raycaster.intersectObjects(scene.children, true);
-
-                if (intersects.length > 0) {
-                    const object = intersects[0].object;
-                    handleObjectClick(object);
-                }
-            });
-
-            // Close overlay buttons
-            document.querySelectorAll('.close-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.target.parentElement.classList.remove('show');
-                });
-            });
-
-            // Mobile menu toggle
-            const navToggle = document.querySelector('.nav-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-            
-            navToggle.addEventListener('click', () => {
-                navMenu.classList.toggle('active');
-                navToggle.classList.toggle('active');
-            });
-        }
-
-        function handleObjectClick(object) {
-            if (object.userData.type === 'field') {
-                showOverlay('matchesOverlay');
-            } else if (object.userData.type === 'stand') {
-                showOverlay('ticketsOverlay');
-            } else if (object.userData.type === 'entrance') {
-                showOverlay('matchesOverlay'); // Show matches when clicking entrance
-            }
-        }
-
-        function showOverlay(overlayId) {
-            document.querySelectorAll('.ui-overlay').forEach(overlay => {
-                overlay.classList.remove('show');
-            });
-            document.getElementById(overlayId).classList.add('show');
-        }
-
-        // Setup intro audio
-        function setupIntroAudio() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // Play intro sound only once
-                if (!audioPlayed) {
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-                    
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-                    
-                    oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-                    oscillator.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 2);
-                    
-                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
-                    
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 2);
-                    
-                    audioPlayed = true;
-                }
-            } catch (error) {
-                console.log('Audio not supported');
-            }
-        }
-
-        // Create floating sports elements
-        function createFloatingSportsElements() {
-            const elements = ['⚽', '🏈', '🏀', '🎾', '🏐', '🥅', '🏃‍♂️', '🏆', '🥇'];
-            
-            function createFloatingElement() {
-                const element = document.createElement('div');
-                element.className = 'floating-sport-element';
-                element.textContent = elements[Math.floor(Math.random() * elements.length)];
-                element.style.left = Math.random() * window.innerWidth + 'px';
-                element.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                element.style.fontSize = (Math.random() * 20 + 20) + 'px';
-                element.style.opacity = Math.random() * 0.3 + 0.1;
-                
-                document.getElementById('floatingElements').appendChild(element);
-                
-                // Remove element after animation
-                setTimeout(() => {
-                    if (element.parentNode) {
-                        element.parentNode.removeChild(element);
-                    }
-                }, 20000);
-            }
-            
-            // Create elements periodically
-            setInterval(createFloatingElement, 3000);
-            
-            // Create initial elements
-            for (let i = 0; i < 5; i++) {
-                setTimeout(createFloatingElement, i * 1000);
-            }
+            setupNavbar();
         }
 
         // Animation loop with automatic rotation
         function animate() {
             requestAnimationFrame(animate);
             
-            // Auto-rotate stadium
             if (stadium) {
                 stadium.rotation.y += rotationSpeed;
             }
             
-            // Update camera to look at center
             camera.lookAt(0, 0, 0);
-            
             renderer.render(scene, camera);
         }
 
         // Utility functions
         function updateLoadingProgress(progress) {
-            document.getElementById('loadingProgress').textContent = progress + '%';
+            document.getElementById('loadingProgress').textContent = Math.round(progress) + '%';
         }
 
         function hideLoadingScreen() {
@@ -476,18 +347,10 @@
             }, 1000);
         }
 
-        function updateNextMatchDate() {
-            const nextMatch = new Date();
-            nextMatch.setDate(nextMatch.getDate() + 7);
-            const options = { 
-                weekday: 'short', 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            };
-            document.getElementById('nextMatchDate').textContent = nextMatch.toLocaleDateString('en-US', options);
+        function showError(message) {
+            const loadingText = document.querySelector('.loading-text');
+            loadingText.textContent = message;
+            loadingText.style.color = '#ff4444';
         }
 
         // Responsive handling
@@ -497,29 +360,13 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        window.addEventListener('resize', handleResize);
+        window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
-        // Initialize when page loads
         window.addEventListener('load', init);
-
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-
-        // Close overlays with Escape key
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                document.querySelectorAll('.ui-overlay').forEach(overlay => {
-                    overlay.classList.remove('show');
-                });
-            }
-        });
 
     </script>
 </body>

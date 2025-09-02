@@ -2,105 +2,233 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Cargar Modelo GLB con Three.js</title>
-    <style>
-        body { margin: 0; }
-        canvas { display: block; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadio</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/loading.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/infopanel.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading Stadium...</div>
+        <div class="loading-progress" id="loadingProgress">0%</div>
+    </div>
 
-    <!-- Three.js -->
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">⚽</span>
+                <span class="logo-text">Estadio Irineo Pimentel Rojas</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link active">Inicio</a></li>
+                <li><a href="index3.html" class="nav-link">Partidos</a></li>
+                <li><a href="#" class="nav-link">Entradas</a></li>
+                <li><a href="#" class="nav-link">Galeria</a></li>
+                <li><a href="index4.html" class="nav-link">Historia</a></li>
+            </ul>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Canvas -->
+    <div id="canvasContainer"></div>
+
+    <audio id="bgMusic" src="sonidos/intro.mp3" loop preload="auto"></audio>
+
+    <!-- Floating Sports Elements -->
+    <div class="floating-elements" id="floatingElements"></div>
+
+    <!-- Three.js Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
     <!-- GLTFLoader -->
     <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
-
-    <!-- OrbitControls -->
-    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/controls/OrbitControls.js"></script>
-
+    
+    <!-- JS externo para la música -->
+    <script src="script/fondo.js" defer></script>
+    <!-- JS separados -->
+    <script src="script/background.js" defer></script>
+    <script src="script/floatingElements.js" defer></script>
+    <script src="script/navbar.js" defer></script>
+    
     <script>
-        // Escena y cámara
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xeeeeee);
+        // Global variables
+        let scene, camera, renderer;
+        let stadium;
+        let rotationSpeed = 0.003;
+        let introAudio;
+        let audioPlayed = false;
+        let loader;
 
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 2, 5);
+        // Initialize the application
+        async function init() {
+            try {
+                await setupScene();
+                await loadStadium();
+                setupLighting();
+                setupSkybox();
+                setupInteractions();
+                createFloatingSportsElements();
+                hideLoadingScreen();
+                animate();
+            } catch (error) {
+                console.error('Initialization failed:', error);
+                hideLoadingScreen();
+                showError('Error loading stadium model. Please check if estadio.glb exists in the same directory.');
+            }
+        }
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+        // Setup Three.js scene
+        function setupScene() {
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0xf0f0f0, 100, 500); // Niebla más clara
 
-        // Luces
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 10, 50); // Vista frontal del personaje
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(5, 10, 7.5);
-        scene.add(directionalLight);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.setClearColor(0xf0f0f0, 1); // Fondo claro como model viewer
 
-        // Controles
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
+            document.getElementById('canvasContainer').appendChild(renderer.domElement);
+        }
 
-        // Variable global para el grupo del modelo
-        let modelGroup;
-
-        function push_modelGLB_not_animed(posx=0, posy=0, posz=0, url, sizeX=1, sizeY=1, sizeZ=1, rotx=0, roty=0, rotz=0) {
-            const loader = new THREE.GLTFLoader();
-            loader.load(url, function(gltf) {
-                const model = gltf.scene;
-
-                // Crear grupo para centrar y rotar correctamente
-                modelGroup = new THREE.Group();
-                modelGroup.add(model);
-
-                // Centrar el modelo dentro del grupo
-                const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                model.position.sub(center);
-
-                // Escalar, rotar y posicionar el grupo
-                modelGroup.scale.set(sizeX, sizeY, sizeZ);
-                modelGroup.rotation.set(rotx, roty, rotz);
-                modelGroup.position.set(posx, posy, posz);
-
-                // Cambiar color solo si no tiene textura
-                model.traverse(function(child) {
-                    if (child.isMesh && !child.material.map) {
-                        child.material.color = new THREE.Color(0x880000);
-                    }
-                });
-
-                scene.add(modelGroup);
-            }, undefined, function(error) {
-                console.error('Error cargando GLB:', error);
+        // Load stadium model from GLB file
+        async function loadStadium() {
+            return new Promise((resolve, reject) => {
+                updateLoadingProgress(20);
+                
+                push_modelGLB_not_animed(0, 0, 0, 'models/irineo.glb', 37, 37,37, 0, 0, 0, resolve, reject);
             });
         }
 
-        // Cargar modelo
-        push_modelGLB_not_animed(0, 0, 0, '/models/estadio2.glb', 1, 1, 1, 0, Math.PI, 0);
+        function push_modelGLB_not_animed(posx=0, posy=0, posz=0, url, sizeX=1, sizeY=1, sizeZ=1, rotx=0, roty=0, rotz=0, resolve, reject) {
+            const loader = new THREE.GLTFLoader();
+            loader.load(url, function(gltf) {
+                updateLoadingProgress(60);
+                
+                const model = gltf.scene;
+                const modelGroup = new THREE.Group();
+                
+                const box = new THREE.Box3().setFromObject(model);
+                const center = box.getCenter(new THREE.Vector3());
+                
+                model.position.sub(center);
+                modelGroup.add(model);
+                // Posición del modelo centrado y derecho
+                modelGroup.scale.set(sizeX, sizeY, sizeZ);
+                modelGroup.rotation.set(0, 0, 0); // Sin rotación para mantener posición original
+                modelGroup.position.set(posx, -3, posz); // Bajar un poco para centrar mejor
+                
+                model.traverse(function(child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
 
-        // Animación
+                        if (!child.material.map) {
+                            child.material.color = new THREE.Color(0x4A90E2);
+                        }
+                    }
+                });
+
+                stadium = modelGroup;
+                scene.add(stadium);
+                updateLoadingProgress(100);
+                
+                if (resolve) resolve();
+            }, function(progress) {
+                const percentComplete = (progress.loaded / progress.total) * 40 + 20;
+                updateLoadingProgress(Math.min(percentComplete, 60));
+            }, function(error) {
+                console.error('Error cargando GLB:', error);
+                if (reject) reject(error);
+            });
+        }
+
+        // Setup lighting system para personaje
+        function setupLighting() {
+            // Luz ambiente suave pero suficiente
+            const ambientLight = new THREE.AmbientLight(0xffffff, 3);
+            scene.add(ambientLight);
+
+            // Luz principal desde el frente (como en model viewer)
+            const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            mainLight.position.set(0, 100, 100);
+            mainLight.castShadow = true;
+            mainLight.shadow.mapSize.width = 2048;
+            mainLight.shadow.mapSize.height = 2048;
+            scene.add(mainLight);
+
+            // Luz de relleno desde atrás para eliminar sombras duras
+            const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            fillLight.position.set(0, 50, -100);
+            scene.add(fillLight);
+
+            // Luz lateral suave
+            const sideLight = new THREE.DirectionalLight(0xffffff, 0.3);
+            sideLight.position.set(100, 50, 0);
+            scene.add(sideLight);
+        }
+
+        // Setup interactions
+        function setupInteractions() {
+            setupNavbar();
+        }
+
+        // Animation loop with automatic rotation
         function animate() {
             requestAnimationFrame(animate);
-            controls.update();
-
-            // Rotar sobre su propio eje Y
-            if (modelGroup) {
-                modelGroup.rotation.y += 0.002;
+            
+            if (stadium) {
+                stadium.rotation.y += rotationSpeed;
             }
-
+            
+            camera.lookAt(0, 0, 0);
             renderer.render(scene, camera);
         }
-        animate();
 
-        // Ajustar ventana
-        window.addEventListener('resize', function() {
+        // Utility functions
+        function updateLoadingProgress(progress) {
+            document.getElementById('loadingProgress').textContent = Math.round(progress) + '%';
+        }
+
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 1000);
+        }
+
+        function showError(message) {
+            const loadingText = document.querySelector('.loading-text');
+            loadingText.textContent = message;
+            loadingText.style.color = '#ff4444';
+        }
+
+        // Responsive handling
+        function handleResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        }
+
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('load', init);
+
     </script>
 </body>
 </html>
