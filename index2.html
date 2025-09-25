@@ -28,7 +28,7 @@
     #three-canvas { width: 100%; height: 100%; display: block; }
 
     /* para el boton */
-    #btn-volver {
+#btn-mundo {
   position: fixed;   /* fixed para que no se mueva al hacer scroll */
   top: 100px;
   right: 20px;
@@ -43,12 +43,44 @@
   cursor: pointer;
   transition: 0.3s;
 }
-#btn-volver:hover {
+#btn-mundo:hover {
   background: rgba(244, 67, 54, 0.9); /* rojo al pasar el mouse */
 }
 
-
-    
+  /* Estilos del botón a la izquierda */
+  #btn-reducir {
+    position: fixed;
+    top: 100px;
+    left: 20px;        /* 👈 lo pone en la izquierda */
+    z-index: 9999;
+    padding: 10px 15px;
+    background: rgba(33, 150, 243, 0.9);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  #btn-reducir:hover {
+    background: rgba(244, 67, 54, 0.9);
+  }
+  
+  /*parte del texto que aparece*/
+  #info-text {
+    position: fixed;
+    top: 160px;       /* debajo del botón */
+    left: 20px;
+    width: 53%; /* opcional: ancho máximo */
+    background: rgba(0, 4, 241, 0.2);
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 17px;
+    display: none;    /* oculto al inicio */
+    z-index: 9999;
+  }
   </style>
 </head>
 <body>
@@ -79,9 +111,31 @@
     </div>
   </nav>
 
-<!-- Botón de volver -->
-<button id="btn-volver" onclick="location.href='estadio.html'">Experiencia en 3D</button>
 
+<!-- Botón a la izquierda -->
+<button id="btn-reducir">Ver Informacion</button>
+<!-- Botón de mundo -->
+<button id="btn-mundo" onclick="location.href='estadio.html'">Experiencia en 3D</button>
+<!-- Texto flotante (oculto al inicio) -->
+<div id="info-text">
+  <h3>Estadio Irineo Pimentel Rojas</h3>
+
+  <div>
+    <p><strong>Ubicación:</strong> Llallagua, Potosí</p>
+    <p><strong>Inauguración:</strong> 25 de noviembre de 2022</p>
+    <p><strong>Capacidad:</strong> 17.000 espectadores</p>
+    <p><strong>Inversión:</strong> Bs 30 millones</p>
+    <p><strong>Inicio de obra:</strong> 22 de diciembre de 2017</p>
+  </div>
+
+  <div>
+    <p>Nombrado en honor a Irineo Pimentel Rojas, dirigente minero histórico.</p>
+    <p>El estadio fomenta el desarrollo de futbolistas locales y clubes.</p>
+    <p>Obra paralizada durante gobierno de Jeanine Áñez y retomada en gestión de Arce.</p>
+    <p>Se entrega en el marco de la gesta libertaria del 10 de noviembre de 1810 de Potosí.</p>
+    <p>La ejecución se realizó con la participación de la comunidad y autoridades locales.</p>
+  </div>
+</div>
 
   <div id="scene-container">
     <canvas id="three-canvas"></canvas>

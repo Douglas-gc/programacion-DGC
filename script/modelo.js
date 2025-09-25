@@ -120,6 +120,34 @@ function setupInteractions() {
   if (typeof setupNavbar === "function") setupNavbar();
 }
 
+//parte del boton
+const btnReducir = document.getElementById("btn-reducir");
+const infoText = document.getElementById("info-text");
+let reducido = false; // estado inicial
+
+btnReducir.addEventListener("click", () => {
+  if (!stadium) return;
+
+  if (!reducido) {
+    // Reducir tamaño y mover a la derecha
+    stadium.scale.set(0.05, 0.05, 0.05);
+    stadium.position.set(10, 0, 0);
+
+    btnReducir.textContent = "Quitar Informacion";
+    infoText.style.display = "block"; // mostrar texto
+    reducido = true;
+  } else {
+    // Restaurar tamaño y posición original
+    stadium.scale.set(0.1, 0.1, 0.1);
+    stadium.position.set(0, 0, 0);
+
+    btnReducir.textContent = "Ver informacion";
+    infoText.style.display = "none"; // ocultar texto
+    reducido = false;
+  }
+});
+
+
 // ============================
 // Animación y utilidades
 // ============================
