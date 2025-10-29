@@ -1,486 +1,86 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESTADIO</title>
-    <!-- <link rel="stylesheet" href="style3.css"> -->
-    <!-- <link rel="stylesheet" href="menubar.css"> -->
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/loading.css">
-    <link rel="stylesheet" href="css/navbar.css">
-    <link rel="stylesheet" href="css/infopanel.css">
-    <link rel="stylesheet" href="css/overlays.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/responsive.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estadio</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/loading.css">
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/infopanel.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/galeria.css">
+  
+  
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loadingScreen">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Loading Stadium...</div>
-        <div class="loading-progress" id="loadingProgress">0%</div>
+  
+  <!-- Pantalla de carga -->
+  <div id="loadingScreen">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading Stadium...</div>
+    <div class="loading-progress" id="loadingProgress">0%</div>
+  </div>
+
+  <!-- Navbar -->
+  <nav id="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <span class="logo-icon">⚽</span>
+        <span class="logo-text">Estadio Irineo Pimentel Rojas</span>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="index.html" class="nav-link active">Inicio</a></li>
+        <li><a href="index2.html" class="nav-link">Estadio</a></li>
+        <li><a href="index3.html" class="nav-link">Partidos</a></li>
+        <li><a href="#" id="btnGaleria" class="nav-link">Galería</a></li>
+        <li><a href="index4.html" class="nav-link ">Historia</a></li>
+      </ul>
+      <div class="nav-toggle"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+  
+  
+  <div id="scene-container">
+    <canvas id="three-canvas"></canvas>
+  </div>
+<!-- Panel flotante de Galería -->
+<!-- Panel flotante de Galería -->
+<div id="galeria-panel">
+  <div class="galeria-container">
+    <div id="miniaturas" class="miniaturas">
+      <img src="img/blooming.png" alt="Blooming">
+      <img src="img/bolivar.png" alt="Bolívar">
+      <img src="img/irineo.jpeg" alt="Estadio Irineo">
+      <img src="img/Oriente_Petrolero.png" alt="Oriente Petrolero">
+      <img src="img/real_potosi.png" alt="Real Potosí">
+      <img src="img/imagen1.jpeg" alt="Imagen 1">
+      <img src="img/imagen2.jpeg" alt="Imagen 2">
+      <img src="img/imagen3.jpg" alt="Imagen 3">
+      <img src="img/imagen4.webp" alt="Imagen 4">
+      <img src="img/imagen5.jpg" alt="Imagen 5">
     </div>
 
-    <!-- Navigation -->
-    <nav id="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <span class="logo-icon">⚽</span>
-                <span class="logo-text">Estadio Irineo Pimentel Rojas</span>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="index.html" class="nav-link active">Inicio</a></li>
-                <li><a href="index2.html" class="nav-link">Estadio</a></li>
-                <li><a href="index3.html" class="nav-link">partidos</a></li>
-                <li><a href="index5.html" class="nav-link">Galeria</a></li>
-                <li><a href="index4.html" class="nav-link">Historia</a></li>
-            </ul>
-            <div class="nav-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Canvas -->
-    <div id="canvasContainer"></div>
-
-    <!-- Info Panel -->
-    <div class="info-panel">
-        <div class="scoreboard">
-            <div class="next-match">Cargando Estadio...</div>
-            <div class="match-date" id="nextMatchDate">Loading...</div>
-        </div>
-        <div class="stadium-info">
-            <p>🏟️ Capacidad: 80,000</p>
-            <p>📍 presiona el estadio</p>
-        </div>
+    <div id="three-container">
+      <canvas id="galeria-canvas"></canvas>
     </div>
+  </div>
 
-    <!-- UI Overlays -->
-    <div id="matchesOverlay" class="ui-overlay">
-        <button class="close-btn">&times;</button>
-        <h3>⚽ Calendario de Partidos</h3>
-        <div id="matchList">
-            <div class="match-item">
-                <div class="match-teams">🔵 Equipo Local vs Barcelona 🔴</div>
-                <div class="match-datetime">March 15, 2025 - 8:00 PM</div>
-            </div>
-            <div class="match-item">
-                <div class="match-teams">🔵 Equipo Local vs Real Madrid ⚪</div>
-                <div class="match-datetime">March 22, 2025 - 9:00 PM</div>
-            </div>
-            <div class="match-item">
-                <div class="match-teams">🔵 Equipo Local vs Liverpool 🔴</div>
-                <div class="match-datetime">April 3, 2025 - 7:30 PM</div>
-            </div>
-        </div>
-    </div>
+  <button id="cerrarGaleria">Cerrar ✖</button>
+</div>
 
-    <div id="ticketsOverlay" class="ui-overlay">
-        <button class="close-btn">&times;</button>
-        <h3>🎫 Información de Entradas</h3>
-        <div id="ticketInfo">
-            <div class="ticket-tier">
-                <div class="tier-name">👑 Zona VIP</div>
-                <div class="tier-price">$150 - $250</div>
-                <div class="tier-benefits">• Asientos premium • Acceso a sala VIP • Bebidas gratis</div>
-            </div>
-            <div class="ticket-tier">
-                <div class="tier-name">⭐ Asientos Premium</div>
-                <div class="tier-price">$80 - $120</div>
-                <div class="tier-benefits">• Excelente vista • Asientos cómodos • Snacks del estadio</div>
-            </div>
-            <div class="ticket-tier">
-                <div class="tier-name">🎟️ Entrada General</div>
-                <div class="tier-price">$35 - $55</div>
-                <div class="tier-benefits">• Asientos estándar • Acceso completo al estadio</div>
-            </div>
-        </div>
-    </div>
+  <audio id="bgMusic" src="sonidos/intro.mp3" loop preload="auto"></audio>
+  <div class="floating-elements" id="floatingElements"></div>
 
-    <audio id="bgMusic" src="sonidos/intro.mp3" loop preload="auto"></audio>
-    <!-- JS externo para la música -->
-<script src="script/fondo.js" defer></script>
+  <!-- Scripts externos -->
+  <script src="script/fondo.js" defer></script>
+  <script src="script/background.js" defer></script>
+  <script src="script/floatingElements.js" defer></script>
+  <script src="script/navbar.js" defer></script>
+  <script type="module" src="script/index.js"></script>
+  <script type="module" src="script/galeria.js"></script>
 
-    <!-- Floating Sports Elements -->
-    <div class="floating-elements" id="floatingElements"></div>
-
-
-    <!-- Three.js Script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- GLTFLoader -->
-    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
-    <script>
-        // Global variables
-        let scene, camera, renderer;
-        let stadium;
-        let rotationSpeed = 0.003;
-        let introAudio;
-        let audioPlayed = false;
-        let loader;
-
-        // Initialize the application
-     async function init() {
-    try {
-        await setupScene();
-        await loadStadium();
-        setupLighting();
-        setupSkybox();
-        setupInteractions();
-        createFloatingSportsElements();
-        hideLoadingScreen();
-        animate();
-        updateNextMatchDate();
-    } catch (error) {
-        console.error('Initialization failed:', error);
-        hideLoadingScreen();
-        showError('Error loading stadium model. Please check if estadio.glb exists in the same directory.');
-    }
-}
-
-
-
-        // Setup Three.js scene
-        function setupScene() {
-            scene = new THREE.Scene();
-            scene.fog = new THREE.Fog(0x87CEEB, 200, 800);
-
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-            camera.position.set(0, 80, 150);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            renderer.setClearColor(0x87CEEB, 1);
-
-            document.getElementById('canvasContainer').appendChild(renderer.domElement);
-        }
-
-        // Load stadium model from GLB file
-        async function loadStadium() {
-            return new Promise((resolve, reject) => {
-                updateLoadingProgress(20);
-                
-                push_modelGLB_not_animed(0, 0, 0, 'models/estadio2.glb', 1, 1, 1, 0, 0, 0, resolve, reject);
-            });
-        }
-
-         function push_modelGLB_not_animed(posx=0, posy=0, posz=0, url, sizeX=1, sizeY=1, sizeZ=1, rotx=0, roty=0, rotz=0, resolve, reject) {
-    const loader = new THREE.GLTFLoader();
-    loader.load(url, function(gltf) {
-        updateLoadingProgress(60);
-        
-        const model = gltf.scene;
-        
-        // Crear un grupo para centrar y rotar correctamente
-        const modelGroup = new THREE.Group();
-        
-        // PASO IMPORTANTE: Calcular el centro del bounding box y centrar el modelo
-        const box = new THREE.Box3().setFromObject(model);
-        const center = box.getCenter(new THREE.Vector3());
-        
-        // Mover el modelo para centrarlo en el origen del grupo
-        model.position.sub(center);
-        
-        // Ahora añadir el modelo centrado al grupo
-        modelGroup.add(model);
-        
-        // Aplicar transformaciones al GRUPO, no al modelo individual
-        modelGroup.scale.set(sizeX, sizeY, sizeZ);
-        modelGroup.rotation.set(rotx, roty, rotz);
-        modelGroup.position.set(posx, posy, posz);
-        
-        // Enable shadows and add interaction data
-        model.traverse(function(child) {
-            if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-                
-                // Add interaction data to meshes based on their names or materials
-                if (child.name.toLowerCase().includes('field') || 
-                    child.name.toLowerCase().includes('campo') ||
-                    child.name.toLowerCase().includes('grass')) {
-                    child.userData = { type: 'field' };
-                } else if (child.name.toLowerCase().includes('stand') || 
-                          child.name.toLowerCase().includes('tribune') ||
-                          child.name.toLowerCase().includes('seat')) {
-                    child.userData = { type: 'stand', section: `Section ${child.name}` };
-                } else if (child.name.toLowerCase().includes('entrance') || 
-                          child.name.toLowerCase().includes('gate') ||
-                          child.name.toLowerCase().includes('door')) {
-                    child.userData = { type: 'entrance', name: child.name };
-                } else {
-                    // Default interaction for stadium parts
-                    child.userData = { type: 'stadium_part' };
-                }
-
-                // Solo cambiar color si NO hay textura
-                if (!child.material.map) {
-                    child.material.color = new THREE.Color(0x4A90E2);
-                }
-            }
-        });
-
-        // Asignar el grupo global para animación
-        stadium = modelGroup;
-        scene.add(stadium);
-        updateLoadingProgress(100);
-        
-        if (resolve) resolve();
-    }, function(progress) {
-        // Update loading progress
-        const percentComplete = (progress.loaded / progress.total) * 40 + 20; // 20-60%
-        updateLoadingProgress(Math.min(percentComplete, 60));
-    }, function(error) {
-        console.error('Error cargando GLB:', error);
-        if (reject) reject(error);
-    });
-}
-
-
-        // Setup lighting system
-        function setupLighting() {
-            // Ambient light
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
-            scene.add(ambientLight);
-
-            // Directional light (sun)
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(100, 100, 50);
-            directionalLight.castShadow = true;
-            directionalLight.shadow.mapSize.width = 2048;
-            directionalLight.shadow.mapSize.height = 2048;
-            directionalLight.shadow.camera.near = 0.5;
-            directionalLight.shadow.camera.far = 500;
-            directionalLight.shadow.camera.left = -200;
-            directionalLight.shadow.camera.right = 200;
-            directionalLight.shadow.camera.top = 200;
-            directionalLight.shadow.camera.bottom = -200;
-            scene.add(directionalLight);
-
-            // Add some stadium lights for better illumination
-            const spotLight1 = new THREE.SpotLight(0xffffff, 0.5);
-            spotLight1.position.set(50, 100, 50);
-            spotLight1.castShadow = true;
-            scene.add(spotLight1);
-
-            const spotLight2 = new THREE.SpotLight(0xffffff, 0.5);
-            spotLight2.position.set(-50, 100, -50);
-            spotLight2.castShadow = true;
-            scene.add(spotLight2);
-        }
-
-        // Setup skybox
-        function setupSkybox() {
-            const skyGeometry = new THREE.SphereGeometry(1000, 32, 32);
-            const skyMaterial = new THREE.MeshBasicMaterial({
-                color: 0x87CEEB,
-                side: THREE.BackSide
-            });
-            const sky = new THREE.Mesh(skyGeometry, skyMaterial);
-            scene.add(sky);
-        }
-
-        // Setup interactions
-        function setupInteractions() {
-            const raycaster = new THREE.Raycaster();
-            const mouse = new THREE.Vector2();
-
-            renderer.domElement.addEventListener('click', (event) => {
-                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-                raycaster.setFromCamera(mouse, camera);
-                const intersects = raycaster.intersectObjects(scene.children, true);
-
-                if (intersects.length > 0) {
-                    const object = intersects[0].object;
-                    handleObjectClick(object);
-                }
-            });
-
-            // Close overlay buttons
-            document.querySelectorAll('.close-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.target.parentElement.classList.remove('show');
-                });
-            });
-
-            // Mobile menu toggle
-            const navToggle = document.querySelector('.nav-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-            
-            navToggle.addEventListener('click', () => {
-                navMenu.classList.toggle('active');
-                navToggle.classList.toggle('active');
-            });
-        }
-
-        function handleObjectClick(object) {
-            if (object.userData.type === 'field') {
-                showOverlay('matchesOverlay');
-            } else if (object.userData.type === 'stand') {
-                showOverlay('ticketsOverlay');
-            } else if (object.userData.type === 'entrance') {
-                showOverlay('matchesOverlay');
-            } else if (object.userData.type === 'stadium_part') {
-                // Default action for any stadium part
-                showOverlay('matchesOverlay');
-            }
-        }
-
-        function showOverlay(overlayId) {
-            document.querySelectorAll('.ui-overlay').forEach(overlay => {
-                overlay.classList.remove('show');
-            });
-            document.getElementById(overlayId).classList.add('show');
-        }
-
-        // Setup intro audio
-        function setupIntroAudio() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // Play intro sound only once
-                if (!audioPlayed) {
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-                    
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-                    
-                    oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-                    oscillator.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 2);
-                    
-                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
-                    
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 2);
-                    
-                    audioPlayed = true;
-                }
-            } catch (error) {
-                console.log('Audio not supported');
-            }
-        }
-
-        // Create floating sports elements
-        function createFloatingSportsElements() {
-            const elements = ['⚽', '🏈', '🏀', '🎾', '🏐', '🥅', '🏃‍♂️', '🏆', '🥇'];
-            
-            function createFloatingElement() {
-                const element = document.createElement('div');
-                element.className = 'floating-sport-element';
-                element.textContent = elements[Math.floor(Math.random() * elements.length)];
-                element.style.left = Math.random() * window.innerWidth + 'px';
-                element.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                element.style.fontSize = (Math.random() * 20 + 20) + 'px';
-                element.style.opacity = Math.random() * 0.3 + 0.1;
-                
-                document.getElementById('floatingElements').appendChild(element);
-                
-                // Remove element after animation
-                setTimeout(() => {
-                    if (element.parentNode) {
-                        element.parentNode.removeChild(element);
-                    }
-                }, 20000);
-            }
-            
-            // Create elements periodically
-            setInterval(createFloatingElement, 3000);
-            
-            // Create initial elements
-            for (let i = 0; i < 5; i++) {
-                setTimeout(createFloatingElement, i * 1000);
-            }
-        }
-
-        // Animation loop with automatic rotation
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            // Auto-rotate stadium
-            if (stadium) {
-            stadium.rotation.y += rotationSpeed;
-            }
-            
-            // Update camera to look at center
-            camera.lookAt(0, 0, 0);
-            
-            renderer.render(scene, camera);
-        }
-
-        // Utility functions
-        function updateLoadingProgress(progress) {
-            document.getElementById('loadingProgress').textContent = Math.round(progress) + '%';
-        }
-
-        function hideLoadingScreen() {
-            const loadingScreen = document.getElementById('loadingScreen');
-            loadingScreen.style.opacity = '0';
-            setTimeout(() => {
-                loadingScreen.style.display = 'none';
-            }, 1000);
-        }
-
-        function showError(message) {
-            const loadingText = document.querySelector('.loading-text');
-            loadingText.textContent = message;
-            loadingText.style.color = '#ff4444';
-        }
-
-        function updateNextMatchDate() {
-            const nextMatch = new Date();
-            nextMatch.setDate(nextMatch.getDate() + 7);
-            const options = { 
-                weekday: 'short', 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            };
-            document.getElementById('nextMatchDate').textContent = nextMatch.toLocaleDateString('en-US', options);
-        }
-
-        // Responsive handling
-        function handleResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        window.addEventListener('resize', handleResize);
-
-        // Initialize when page loads
-        window.addEventListener('load', init);
-
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-
-        // Close overlays with Escape key
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                document.querySelectorAll('.ui-overlay').forEach(overlay => {
-                    overlay.classList.remove('show');
-                });
-            }
-        });
-
-    </script>
 </body>
 </html>
