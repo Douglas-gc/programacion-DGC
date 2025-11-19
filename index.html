@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/responsive.css">
   <link rel="stylesheet" href="css/galeria.css">
+  <link rel="stylesheet" href="css/estadio.css">
   
   
 </head>
@@ -32,8 +33,8 @@
         <span class="logo-text">Estadio Irineo Pimentel Rojas</span>
       </div>
       <ul class="nav-menu">
-        <li><a href="index.html" class="nav-link active">Inicio</a></li>
-        <li><a href="index2.html" class="nav-link">Estadio</a></li>
+        <li><a href="index.html" class="nav-link">Inicio</a></li>
+        <li><a href="#" id="btnEstadio" class="nav-link">Estadio</a></li>
         <li><a href="index3.html" class="nav-link">Partidos</a></li>
         <li><a href="#" id="btnGaleria" class="nav-link">Galería</a></li>
         <li><a href="index4.html" class="nav-link ">Historia</a></li>
@@ -70,6 +71,33 @@
 
   <button id="cerrarGaleria">Cerrar ✖</button>
 </div>
+<!-- Panel flotante de Estadio -->
+<div id="estadio-panel">
+  <div class="estadio-container">
+    <button id="cerrarEstadio" class="cerrar-btn">Cerrar ✖</button>
+
+    <!-- 🎯 Botones flotantes -->
+    <button id="btn-reducir">Ver Información</button>
+
+    <!-- Texto informativo -->
+    <div id="info-text">
+      <h3>Estadio Irineo Pimentel Rojas</h3>
+      <p><strong>Ubicación:</strong> Llallagua, Potosí</p>
+      <p><strong>Inauguración:</strong> 25 de noviembre de 2022</p>
+      <p><strong>Capacidad:</strong> 17.000 espectadores</p>
+      <p><strong>Inversión:</strong> Bs 30 millones</p>
+      <p><strong>Inicio de obra:</strong> 22 de diciembre de 2017</p>
+      <p>Nombrado en honor a Irineo Pimentel Rojas, dirigente minero histórico.</p>
+      <p>El estadio fomenta el desarrollo de futbolistas locales y clubes.</p>
+      <p>Obra paralizada durante gobierno de Jeanine Áñez y retomada en gestión de Arce.</p>
+      <p>Se entrega en el marco de la gesta libertaria del 10 de noviembre de 1810 de Potosí.</p>
+      <p>La ejecución se realizó con la participación de la comunidad y autoridades locales.</p>
+    </div>
+
+    <canvas id="estadio-canvas"></canvas>
+  </div>
+</div>
+
 
   <audio id="bgMusic" src="sonidos/intro.mp3" loop preload="auto"></audio>
   <div class="floating-elements" id="floatingElements"></div>
@@ -81,6 +109,20 @@
   <script src="script/navbar.js" defer></script>
   <script type="module" src="script/index.js"></script>
   <script type="module" src="script/galeria.js"></script>
+<script type="module">
+  import { iniciarEstadio, cerrarEstadio } from './script/modelo.js';
+
+  // Botón del menú (Estadio)
+  const btnEstadio = document.getElementById('btnEstadio');
+btnEstadio.addEventListener('click', (e) => {
+  e.preventDefault();
+  iniciarEstadio();
+});
+
+
+  // Botón de cerrar
+  document.getElementById('cerrarEstadio').addEventListener('click', cerrarEstadio);
+</script>
 
 </body>
 </html>

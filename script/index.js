@@ -1,9 +1,20 @@
 import * as THREE from "https://esm.sh/three@0.161.0";
 import { GLTFLoader } from "https://esm.sh/three@0.161.0/examples/jsm/loaders/GLTFLoader.js";
-import { OrbitControls } from "https://esm.sh/three@0.161.0/examples/jsm/controls/OrbitControls.js";
+import { Sky } from "https://esm.sh/three@0.161.0/examples/jsm/objects/Sky.js";
+import { PointerLockControls } from "https://esm.sh/three@0.161.0/examples/jsm/controls/PointerLockControls.js";
 
 let scene, camera, renderer, controls;
 let stadium;
+
+// Movimiento
+let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+let velocity = new THREE.Vector3();
+let direction = new THREE.Vector3();
+const speed = 40.0; // velocidad de movimiento
+
+// Música
+const audioElement = document.getElementById("bgMusic");
+let btnMusic;
 
 window.addEventListener("load", init);
 window.addEventListener("resize", handleResize);
@@ -13,51 +24,74 @@ async function init() {
     setupScene();
     await loadStadium();
     setupLighting();
-    setupInteractions();
+    setupControls();
     hideLoadingScreen();
     animate();
   } catch (error) {
     console.error("Initialization failed:", error);
     hideLoadingScreen();
-    showError("Error loading stadium model. Check if irineo.glb exists.");
+    showError("Error loading stadium model. Check if estadio.glb exists.");
   }
 }
 
+// --------------------------------------------------------------------
+// CONFIGURACIÓN DE ESCENA
+// --------------------------------------------------------------------
 function setupScene() {
   scene = new THREE.Scene();
 
-  camera = new THREE.PerspectiveCamera(
-    50,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-  );
-  camera.position.set(0, 10, 50);
+  // CIELO NOCTURNO
+  const sky = new Sky();
+  sky.scale.setScalar(50000);
+  scene.add(sky);
 
+  const skyUniforms = sky.material.uniforms;
+  skyUniforms["turbidity"].value = 1;
+  skyUniforms["rayleigh"].value = 0.1;
+  skyUniforms["mieCoefficient"].value = 0.0005;
+  skyUniforms["mieDirectionalG"].value = 0.9;
+
+  const sun = new THREE.Vector3();
+  sun.setFromSphericalCoords(1, THREE.MathUtils.degToRad(-3), THREE.MathUtils.degToRad(0));
+  skyUniforms["sunPosition"].value.copy(sun);
+
+  scene.background = new THREE.Color(0x000010);
+
+  // ESTRELLAS
+  const starGeometry = new THREE.BufferGeometry();
+  const starCount = 2000;
+  const starPositions = new Float32Array(starCount * 3);
+  for (let i = 0; i < starCount; i++) {
+    const r = 1000;
+    starPositions[i * 3] = (Math.random() - 0.5) * r * 2;
+    starPositions[i * 3 + 1] = (Math.random() - 0.5) * r * 2;
+    starPositions[i * 3 + 2] = (Math.random() - 0.5) * r * 2;
+  }
+  starGeometry.setAttribute("position", new THREE.BufferAttribute(starPositions, 3));
+  const starMaterial = new THREE.PointsMaterial({ size: 1.2, sizeAttenuation: true, color: 0xffffff });
+  scene.add(new THREE.Points(starGeometry, starMaterial));
+
+  // CÁMARA
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+  camera.position.set(0, 1.6, 5);
+  // PUNTO A DONDE MIRAR
+  camera.lookAt(100, 2, 0);
   const canvas = document.getElementById("three-canvas");
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, canvas });
+  renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-  // 👉 Controles con el mouse
-  controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.05;
-  controls.enableZoom = true;
-  controls.enablePan = true;
 }
 
+// --------------------------------------------------------------------
+// CARGA DEL ESTADIO
+// --------------------------------------------------------------------
 function loadStadium() {
   return new Promise((resolve, reject) => {
-    updateLoadingProgress(20);
-
     const loader = new GLTFLoader();
     loader.load(
-      "models/estadio2.glb",
-      gltf => {
-        updateLoadingProgress(60);
-
+      "models/estadio.glb",
+      (gltf) => {
         const model = gltf.scene;
         const group = new THREE.Group();
 
@@ -68,9 +102,9 @@ function loadStadium() {
 
         group.add(model);
         group.scale.set(3, 3, 3);
-        group.position.set(0,0, 0);
+        group.position.set(0, 0, 0);
 
-        model.traverse(child => {
+        model.traverse((child) => {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
@@ -80,76 +114,156 @@ function loadStadium() {
         stadium = group;
         scene.add(stadium);
 
-        // 👉 Ajustar cámara y controles al centro del modelo
-        camera.position.set(center.x + 5, center.y + 10, center.z + 50);
-        controls.target.copy(center);
-        controls.update();
-
-        updateLoadingProgress(100);
+        // Posición inicial de cámara
+        camera.position.set(center.x+(-237.5), center.y + (-45), center.z + 40);
         resolve();
       },
-      xhr => {
-        const percent = (xhr.loaded / xhr.total) * 40 + 20;
-        updateLoadingProgress(Math.min(percent, 60));
-      },
-      err => reject(err)
+      undefined,
+      (err) => reject(err)
     );
   });
 }
 
+// --------------------------------------------------------------------
+// ILUMINACIÓN
+// --------------------------------------------------------------------
 function setupLighting() {
-  const ambient = new THREE.AmbientLight(0xffffff, 3);
+  const ambient = new THREE.AmbientLight(0xffffff, 0.7);
   scene.add(ambient);
 
-  const main = new THREE.DirectionalLight(0xffffff, 1.0);
-  main.position.set(0, 100, 100);
+  const main = new THREE.DirectionalLight(0xffffff, 0.5);
+  main.position.set(0, 200, 200);
   main.castShadow = true;
+  main.shadow.mapSize.set(2048, 2048);
   scene.add(main);
-
-  const side = new THREE.DirectionalLight(0xffffff, 0.3);
-  side.position.set(100, 50, 0);
-  scene.add(side);
 }
 
-function setupInteractions() {
-  if (typeof setupNavbar === "function") setupNavbar();
+// --------------------------------------------------------------------
+// CONTROLES FPS Y MÚSICA
+// --------------------------------------------------------------------
+function setupControls() {
+  controls = new PointerLockControls(camera, renderer.domElement);
+
+  // Instrucciones para click
+  const instructions = document.createElement("div");
+  instructions.id = "instructions";
+  instructions.innerHTML = "<p>Haz click para explorar el estadio</p><p>WASD para moverte</p>";
+
+  instructions.style.position = "absolute";
+  instructions.style.bottom = "20px";
+  instructions.style.right = "20px";
+  instructions.style.left = "auto";
+  instructions.style.top = "auto";
+  instructions.style.transform = "none";
+
+  instructions.style.background = "rgba(0,0,0,0.7)";
+  instructions.style.color = "#fff";
+  instructions.style.padding = "20px";
+  instructions.style.borderRadius = "10px";
+  instructions.style.textAlign = "center";
+  instructions.style.cursor = "pointer";
+  document.body.appendChild(instructions);
+
+  instructions.addEventListener("click", () => controls.lock());
+  controls.addEventListener("lock", () => { instructions.style.display = "none"; });
+  controls.addEventListener("unlock", () => { instructions.style.display = ""; });
+
+  document.addEventListener("keydown", (event) => {
+    switch(event.code) {
+      case "KeyW": moveForward = true; break;
+      case "KeyS": moveBackward = true; break;
+      case "KeyA": moveLeft = true; break;
+      case "KeyD": moveRight = true; break;
+    }
+  });
+
+  document.addEventListener("keyup", (event) => {
+    switch(event.code) {
+      case "KeyW": moveForward = false; break;
+      case "KeyS": moveBackward = false; break;
+      case "KeyA": moveLeft = false; break;
+      case "KeyD": moveRight = false; break;
+    }
+  });
+
+  scene.add(controls.getObject());
+
+  // Botón para reproducir/pausar música
+  btnMusic = document.createElement("button");
+  btnMusic.id = "btn-music";
+  btnMusic.textContent = "🎵 Reproducir Música";
+  btnMusic.style.position = "fixed";
+  btnMusic.style.bottom = "20px";
+  btnMusic.style.left = "20px"; // Cambia aquí si quieres mover el botón
+  btnMusic.style.padding = "10px 15px";
+  btnMusic.style.background = "rgba(33, 150, 243, 0.9)";
+  btnMusic.style.color = "#fff";
+  btnMusic.style.border = "none";
+  btnMusic.style.borderRadius = "6px";
+  btnMusic.style.fontSize = "14px";
+  btnMusic.style.fontWeight = "bold";
+  btnMusic.style.cursor = "pointer";
+  btnMusic.style.zIndex = "9999";
+  document.body.appendChild(btnMusic);
+
+  btnMusic.addEventListener("click", () => {
+    if(audioElement.paused){
+      audioElement.play();
+      btnMusic.textContent = "⏸️ Pausar Música";
+    } else {
+      audioElement.pause();
+      btnMusic.textContent = "🎵 Reproducir Música";
+    }
+  });
 }
 
+// --------------------------------------------------------------------
+// ANIMACIÓN
+// --------------------------------------------------------------------
 function animate() {
   requestAnimationFrame(animate);
 
-  // 👉 Rotación automática del estadio sobre su propio eje Y
-  if (stadium) {
-    stadium.rotation.y += 0.002; // Ajusta la velocidad cambiando el número
-  }
+  const delta = 0.05;
+  velocity.x -= velocity.x * 10.0 * delta;
+  velocity.z -= velocity.z * 10.0 * delta;
 
-  // Actualiza los controles de OrbitControls
-  controls.update();
+  direction.z = Number(moveForward) - Number(moveBackward);
+  direction.x = Number(moveRight) - Number(moveLeft);
+  direction.normalize();
+
+  if(moveForward || moveBackward) velocity.z -= direction.z * speed * delta;
+  if(moveLeft || moveRight) velocity.x -= direction.x * speed * delta;
+
+  controls.moveRight(-velocity.x * delta);
+  controls.moveForward(-velocity.z * delta);
 
   renderer.render(scene, camera);
 }
 
-
-function updateLoadingProgress(progress) {
-  document.getElementById("loadingProgress").textContent =
-    Math.round(progress) + "%";
-}
-
+// --------------------------------------------------------------------
+// PANTALLA DE CARGA Y ERRORES
+// --------------------------------------------------------------------
 function hideLoadingScreen() {
   const screen = document.getElementById("loadingScreen");
-  screen.style.opacity = "0";
-  setTimeout(() => (screen.style.display = "none"), 1000);
+  if(screen){
+    screen.style.opacity = "0";
+    setTimeout(() => screen.style.display = "none", 1000);
+  }
 }
 
 function showError(msg) {
   const text = document.querySelector(".loading-text");
-  text.textContent = msg;
-  text.style.color = "#ff4444";
+  if(text){
+    text.textContent = msg;
+    text.style.color = "#ff4444";
+  }
 }
 
+// --------------------------------------------------------------------
+// AJUSTE DE TAMAÑO DE VENTANA
+// --------------------------------------------------------------------
 function handleResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
-

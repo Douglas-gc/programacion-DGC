@@ -45,7 +45,7 @@ function loadStadium() {
   return new Promise((resolve, reject) => {
     const loader = new GLTFLoader();
     loader.load(
-      "models/estadio2.glb",
+      "models/estadio.glb",
       (gltf) => {
         stadium = gltf.scene;
         stadium.scale.set(0.1, 0.1, 0.1);

@@ -1,5 +1,5 @@
 // ============================
-// modelo.js (ES Module)
+// modelo.js adaptado al panel flotante
 // ============================
 
 import * as THREE from "https://esm.sh/three@0.161.0";
@@ -8,39 +8,26 @@ import { OrbitControls } from "https://esm.sh/three@0.161.0/examples/jsm/control
 
 let scene, camera, renderer, controls;
 let stadium;
+let animating = false;
 
-window.addEventListener("load", init);
-window.addEventListener("resize", handleResize);
+export function iniciarEstadio() {
+  const panel = document.getElementById("estadio-panel");
+  const canvas = document.getElementById("estadio-canvas");
 
-async function init() {
-  try {
-    setupScene();
-    await loadStadium();
-    setupLighting();
-    setupInteractions();
-    hideLoadingScreen();
-    animate();
-  } catch (error) {
-    console.error("Initialization failed:", error);
-    hideLoadingScreen();
-    showError("Error loading stadium model. Check if estadio2.glb exists.");
-  }
-}
+  // Mostrar el panel (como si fuera una ventana emergente)
+  panel.style.display = "flex";
 
-function setupScene() {
+  // Evitar inicializar más de una vez
+  if (animating) return;
+
+  // Crear escena
   scene = new THREE.Scene();
 
-  camera = new THREE.PerspectiveCamera(
-    50,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-  );
+  camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
   camera.position.set(0, 10, 50);
 
-  const canvasContainer = document.getElementById("scene-container");
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, canvas: document.getElementById("three-canvas") });
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, canvas });
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -49,18 +36,25 @@ function setupScene() {
   controls.dampingFactor = 0.05;
   controls.enableZoom = true;
   controls.enablePan = true;
+
+  // Luces
+  setupLighting();
+
+  // Cargar modelo
+  loadStadium().then(() => {
+    hideLoadingScreen();
+    animate();
+  });
+
+  window.addEventListener("resize", handleResize);
 }
 
 function loadStadium() {
   return new Promise((resolve, reject) => {
-    updateLoadingProgress(20);
-
     const loader = new GLTFLoader();
     loader.load(
-      "models/estadio2.glb",
+      "models/estadio.glb",
       (gltf) => {
-        updateLoadingProgress(60);
-
         const model = gltf.scene;
         const group = new THREE.Group();
 
@@ -68,11 +62,11 @@ function loadStadium() {
         const box = new THREE.Box3().setFromObject(model);
         const center = new THREE.Vector3();
         box.getCenter(center);
-        model.position.sub(center); // mover el modelo para centrarlo en el grupo
+        model.position.sub(center); // centrar el modelo
 
         group.add(model);
         group.scale.set(0.1, 0.1, 0.1);
-        group.position.set(0, 0, 0); // opcional, lo puedes mover en la escena
+        group.position.set(0, 0, 0);
 
         model.traverse((child) => {
           if (child.isMesh) {
@@ -85,22 +79,17 @@ function loadStadium() {
         scene.add(stadium);
 
         // Ajustar cámara y controles
-        camera.position.set(0, 5, 20); 
+        camera.position.set(0, 5, 20);
         controls.target.set(0, 0, 0);
         controls.update();
 
-        updateLoadingProgress(100);
         resolve();
       },
-      (xhr) => {
-        const percent = (xhr.loaded / xhr.total) * 40 + 20;
-        updateLoadingProgress(Math.min(percent, 60));
-      },
+      undefined,
       (err) => reject(err)
     );
   });
 }
-
 
 function setupLighting() {
   const ambient = new THREE.AmbientLight(0xffffff, 3);
@@ -116,75 +105,68 @@ function setupLighting() {
   scene.add(side);
 }
 
-function setupInteractions() {
-  if (typeof setupNavbar === "function") setupNavbar();
-}
-
-//parte del boton
-const btnReducir = document.getElementById("btn-reducir");
-const infoText = document.getElementById("info-text");
-let reducido = false; // estado inicial
-
-btnReducir.addEventListener("click", () => {
-  if (!stadium) return;
-
-  if (!reducido) {
-    // Reducir tamaño y mover a la derecha
-    stadium.scale.set(0.05, 0.05, 0.05);
-    stadium.position.set(10, 0, 0);
-
-    btnReducir.textContent = "Quitar Informacion";
-    infoText.style.display = "block"; // mostrar texto
-    reducido = true;
-  } else {
-    // Restaurar tamaño y posición original
-    stadium.scale.set(0.1, 0.1, 0.1);
-    stadium.position.set(0, 0, 0);
-
-    btnReducir.textContent = "Ver informacion";
-    infoText.style.display = "none"; // ocultar texto
-    reducido = false;
-  }
-});
-
-
-// ============================
-// Animación y utilidades
-// ============================
 function animate() {
+  animating = true;
   requestAnimationFrame(animate);
 
   if (stadium) {
-    stadium.rotation.y += 0.003; // velocidad de rotación
+    stadium.rotation.y += 0.003;
   }
 
   controls.update();
   renderer.render(scene, camera);
 }
 
-function updateLoadingProgress(progress) {
-  const el = document.getElementById("loadingProgress");
-  if (el) el.textContent = Math.round(progress) + "%";
-}
-
 function hideLoadingScreen() {
   const screen = document.getElementById("loadingScreen");
-  screen.style.opacity = "0";
-  setTimeout(() => (screen.style.display = "none"), 1000);
-}
-
-function showError(msg) {
-  const text = document.querySelector(".loading-text");
-  if (text) {
-    text.textContent = msg;
-    text.style.color = "#ff4444";
+  if (screen) {
+    screen.style.opacity = "0";
+    setTimeout(() => (screen.style.display = "none"), 1000);
   }
 }
 
 function handleResize() {
-  if (camera && renderer) {
-    camera.aspect = window.innerWidth / window.innerHeight;
+  const canvas = document.getElementById("estadio-canvas");
+  if (camera && renderer && canvas) {
+    camera.aspect = canvas.clientWidth / canvas.clientHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
   }
+}
+
+export function cerrarEstadio() {
+  const panel = document.getElementById("estadio-panel");
+  panel.style.display = "none";
+  animating = false;
+}
+// ============================
+// Interacción: Botones del Estadio
+// ============================
+
+const btnReducir = document.getElementById("btn-reducir");
+const infoText = document.getElementById("info-text");
+let reducido = false;
+
+if (btnReducir) {
+  btnReducir.addEventListener("click", () => {
+    if (!stadium) return;
+
+    if (!reducido) {
+      // Reducir tamaño y mover a la derecha
+      stadium.scale.set(0.05, 0.05, 0.05);
+      stadium.position.set(10, 0, 0);
+
+      btnReducir.textContent = "Quitar Información";
+      infoText.style.display = "block";
+      reducido = true;
+    } else {
+      // Restaurar tamaño y posición original
+      stadium.scale.set(0.1, 0.1, 0.1);
+      stadium.position.set(0, 0, 0);
+
+      btnReducir.textContent = "Ver Información";
+      infoText.style.display = "none";
+      reducido = false;
+    }
+  });
 }
