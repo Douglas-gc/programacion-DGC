@@ -2,9 +2,13 @@ import * as THREE from "https://esm.sh/three@0.161.0";
 import { GLTFLoader } from "https://esm.sh/three@0.161.0/examples/jsm/loaders/GLTFLoader.js";
 import { Sky } from "https://esm.sh/three@0.161.0/examples/jsm/objects/Sky.js";
 import { PointerLockControls } from "https://esm.sh/three@0.161.0/examples/jsm/controls/PointerLockControls.js";
+import { gsap } from "https://cdn.jsdelivr.net/npm/gsap@3.12.2/index.js";
 
 let scene, camera, renderer, controls;
 let stadium;
+
+let initialCameraPos = new THREE.Vector3();
+let initialCameraRot = new THREE.Euler();
 
 // Movimiento
 let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
@@ -81,6 +85,16 @@ function setupScene() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+//inicio
+  camera.position.set(0, 1.6, 5);
+camera.lookAt(100, 2, 0);
+
+// Guardar posición y rotación inicial
+initialCameraPos.copy(camera.position);
+initialCameraRot.copy(camera.rotation);
+//fin
+
 }
 
 // --------------------------------------------------------------------
@@ -116,6 +130,9 @@ function loadStadium() {
 
         // Posición inicial de cámara
         camera.position.set(center.x+(-237.5), center.y + (-45), center.z + 40);
+        // Guardar como posición inicial
+        initialCameraPos.copy(camera.position);
+        initialCameraRot.copy(camera.rotation);
         resolve();
       },
       undefined,
@@ -267,3 +284,58 @@ function handleResize() {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
+
+// ... dentro de tu archivo index.js, reemplaza esas funciones por:
+
+export function moverCamaraPartidos() {
+  // animar la posición del objeto que contiene la cámara (PointerLockControls)
+  if (!camera || !controls) return;
+
+  gsap.to(controls.getObject().position, {
+    x: 10,
+    y: 6,
+    z: 12,
+    duration: 2.5,
+    ease: "power2.inOut"
+  });
+
+  // si quieres cambiar la orientación (pitch/yaw) animar rotaciones internas
+  // Nota: PointerLockControls pone la cámara como child de getObject(), la rotación X está en children[0]
+  if (controls.getObject().children.length > 0) {
+    gsap.to(controls.getObject().children[0].rotation, {
+      x: 0, // ajusta si hace falta
+      duration: 2.5,
+      ease: "power2.inOut"
+    });
+  }
+}
+
+export function restaurarCamara() {
+  if (!camera || !controls) return;
+
+  gsap.to(controls.getObject().position, {
+    x: initialCameraPos.x,
+    y: initialCameraPos.y,
+    z: initialCameraPos.z,
+    duration: 2,
+    ease: "power2.inOut"
+  });
+
+  gsap.to(controls.getObject().rotation, {
+    y: initialCameraRot.y,
+    duration: 2,
+    ease: "power2.inOut"
+  });
+
+  if (controls.getObject().children.length > 0) {
+    gsap.to(controls.getObject().children[0].rotation, {
+      x: initialCameraRot.x,
+      duration: 2,
+      ease: "power2.inOut"
+    });
+  }
+}
+
+
+
+

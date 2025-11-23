@@ -8,9 +8,9 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/loading.css">
   <link rel="stylesheet" href="css/navbar.css">
-  <link rel="stylesheet" href="css/infopanel.css">
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/partidos.css">
   <link rel="stylesheet" href="css/galeria.css">
   <link rel="stylesheet" href="css/estadio.css">
   <link rel="stylesheet" href="css/historia.css">
@@ -36,7 +36,7 @@
       <ul class="nav-menu">
         <li><a href="index.html" class="nav-link">Inicio</a></li>
         <li><a href="#" id="btnEstadio" class="nav-link">Estadio</a></li>
-        <li><a href="index3.html" class="nav-link">Partidos</a></li>
+        <li><a href="#" id="btnPartidos" class="nav-link">Partidos</a></li>
         <li><a href="#" id="btnGaleria" class="nav-link">Galería</a></li>
         <li><a href="#" id="btnhistoria" class="nav-link">Historia</a></li>
         <!-- <li><a href="index4.html" class="nav-link ">Historia</a></li> -->
@@ -99,6 +99,17 @@
     <canvas id="estadio-canvas"></canvas>
   </div>
 </div>
+
+<!-- partidos -->
+<div id="partidos-panel">
+  <div class="partidos-container">
+    <div id="par-container">
+      <canvas id="partidos-canvas"></canvas>
+    </div>
+  </div>
+  <button id="cerrarPartidos">Cerrar ✖</button>
+</div>
+
 <!-- Panel flotante de Historia -->
 <div id="historia-panel">
   <div class="historia-container">
@@ -136,6 +147,14 @@
   <script src="script/navbar.js" defer></script>
   <script type="module" src="script/index.js"></script>
   <script type="module" src="script/galeria.js"></script>
+  
+  <!-- <script type="module">
+  import { abrirGaleria } from "./script/partidos.js";
+
+  document.getElementById("btnPartidos").addEventListener("click", () => {
+    abrirGaleria();
+  });
+</script> -->
 
 <script type="module">
   import { iniciarEstadio, cerrarEstadio } from './script/modelo.js';
@@ -149,6 +168,42 @@ btnEstadio.addEventListener('click', (e) => {
   // Botón de cerrar
   document.getElementById('cerrarEstadio').addEventListener('click', cerrarEstadio);
 </script>
+
+
+<!-- llamar a js del partidos -->
+<!-- <script type="module">
+    import { iniciarPartidos, iniciarStadium } from "./script/partidos.js";
+
+    iniciarPartidos();
+    moverCamaraPartidos();
+    abrirGaleria(); 
+</script> -->
+<script type="module">
+  import { abrirPartidos, cerrarPartidosPanel } from "./script/partidos.js";
+  import { moverCamaraPartidos, restaurarCamara } from "./script/index.js";
+
+  // Abrir panel + mover cámara
+  document.getElementById("btnPartidos").addEventListener("click", () => {
+    moverCamaraPartidos();
+    abrirPartidos();
+  });
+
+  // Cerrar panel (botón en el HTML con id="cerrarPartidos")
+  document.getElementById("cerrarPartidos").addEventListener("click", () => {
+    cerrarPartidosPanel();
+    // restaurarCamara puede llamarse ya sea aquí o escuchando el evento 'partidosClosed'
+    // Lo llamamos aquí para asegurar restauración inmediata:
+    restaurarCamara();
+  });
+
+  // Además, si prefieres usar el evento global disparado desde partidos.js:
+  window.addEventListener('partidosClosed', () => {
+    restaurarCamara();
+  });
+</script>
+
+
+
 
 <script type="module">
   import { iniciarHistoria, cerrarHistoria } from './script/historia.js';
