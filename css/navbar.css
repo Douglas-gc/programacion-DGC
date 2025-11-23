@@ -6,10 +6,11 @@
   left: 0;
   width: 100%;
   z-index: 1000;
-  background: var(--navbar-gradient);
-  backdrop-filter: blur(20px);
-  border-bottom: 3px solid transparent;
-  border-image: linear-gradient(90deg, var(--accent-gold), var(--light-blue), var(--accent-green)) 1;
+  background: transparent;
+  /*backdrop-filter: blur(20px);*/
+  backdrop-filter: none;
+  /* border-bottom: 3px solid transparent; */
+  /* border-image: linear-gradient(90deg, var(--accent-gold), var(--light-blue), var(--accent-green)) 1; */
   transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
   box-shadow: 0 4px 30px rgba(33, 150, 243, 0.2);
 }
@@ -37,7 +38,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.05);
+  /* background: rgba(255, 255, 255, 0.05); */
+  background: transparent;
   border-radius: 0;
   pointer-events: none;
 }

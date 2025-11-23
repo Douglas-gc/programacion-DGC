@@ -10,7 +10,7 @@ let stadium;
 let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
 let velocity = new THREE.Vector3();
 let direction = new THREE.Vector3();
-const speed = 40.0; // velocidad de movimiento
+const speed = 90.0; // velocidad de movimiento
 
 // Música
 const audioElement = document.getElementById("bgMusic");

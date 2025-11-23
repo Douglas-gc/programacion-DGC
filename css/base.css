@@ -8,7 +8,7 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: var(--gradient-sky);
+  background: transparent;   /* ✔ Fondo simple y limpio */
   overflow-x: hidden;
   color: var(--dark-blue);
   line-height: 1.6;
@@ -21,7 +21,7 @@ body {
   left: 0;
   width: 100%;
   height: 100vh;
-  z-index: 1;
+  z-index: 1;  /* ✔ Detrás de toda la UI */
 }
 
 /* Scrollbar Styling */
@@ -74,4 +74,8 @@ body {
   .ticket-tier {
     border-width: 3px;
   }
+}
+html, body {
+  height: 100%;
+  overflow: hidden; /* ✔ elimina scroll vertical y la barra blanca */
 }
