@@ -272,3 +272,30 @@
   transform: rotate(-45deg) translate(9px, -9px);
   background: var(--success-gradient);
 }
+/* Solo para móviles */
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: flex;
+  }
+
+  .nav-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    flex-direction: column;
+    background: rgba(0,0,0,0.9);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .nav-menu.active {
+    max-height: 500px; /* Ajusta según el número de enlaces */
+  }
+
+  .nav-menu li {
+    margin: 10px 0;
+    text-align: center;
+  }
+}

@@ -1,22 +1,25 @@
-// navbar.js - Funcionalidad del navbar (código original separado)
-
-// Mobile menu toggle
 function setupNavbar() {
-    const navToggle = document.querySelector('.nav-toggle');
-    const navMenu = document.querySelector('.nav-menu');
-    
-    navToggle.addEventListener('click', () => {
-        navMenu.classList.toggle('active');
-        navToggle.classList.toggle('active');
+  const navToggle = document.querySelector('.nav-toggle');
+  const navMenu = document.querySelector('.nav-menu');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  // Abrir/cerrar menú al presionar hamburguesa
+  navToggle.addEventListener('click', () => {
+    navMenu.classList.toggle('active');
+    navToggle.classList.toggle('active');
+  });
+
+  // Cerrar menú automáticamente al presionar un enlace
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      // Solo si el menú está activo
+      if(navMenu.classList.contains('active')){
+        // Dispara el click del toggle para que todo se actualice correctamente
+        navToggle.click();
+      }
     });
+  });
 }
 
-// Navbar scroll effect
-window.addEventListener('scroll', () => {
-    const navbar = document.getElementById('navbar');
-    if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
-    }
-});
+// Llamar la función
+setupNavbar();

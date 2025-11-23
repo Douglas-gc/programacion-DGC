@@ -61,12 +61,68 @@ function init() {
   animate();
 }
 
+// ---------------------------------------------
+// NUEVO showImageOnCube avanzado
+// ---------------------------------------------
 function showImageOnCube(imgSrc) {
-  const tex = loader.load(imgSrc);
-  cube.material[currentFace].map = tex;
-  cube.material[currentFace].needsUpdate = true;
 
-  const rotation = faceRotations[currentFace];
+  // 1. Revisar si ya existe en alguna cara
+  let foundFace = -1;
+  cube.material.forEach((mat, i) => {
+    if (mat.map && mat.map.image && mat.map.image.src.includes(imgSrc)) {
+      foundFace = i;
+    }
+  });
+
+  // SI YA ESTÁ EN UNA CARA → GIRAR
+  if (foundFace !== -1) {
+    const rot = faceRotations[foundFace];
+    gsap.to(cube.rotation, {
+      x: rot.x, y: rot.y, duration: 1.2, ease: "power2.inOut"
+    });
+    currentFace = foundFace;
+    return;
+  }
+
+  // 2. Buscar una cara libre (cara sin mapa o con "default")
+  let freeFace = cube.material.findIndex(
+    m => !m.map || m.map.image?.src.includes("default") || m.map.image === undefined
+  );
+
+  // Si no hay libres, usamos la siguiente cara del contador
+  if (freeFace === -1) freeFace = currentFace;
+
+  // 3. Cargar textura
+  const tex = loader.load(imgSrc, (t) => {
+    // Detectar si es cuadrada o rectangular
+    const w = t.image.width;
+    const h = t.image.height;
+
+    let newGeom;
+
+    if (Math.abs(w - h) < 20) {
+      // CUADRADO
+      newGeom = new THREE.BoxGeometry(3.6, 3.6, 3.6);
+    } else {
+      // RECTANGULAR: más ancho que alto
+      if (w > h) {
+        newGeom = new THREE.BoxGeometry(4.2, 3, 3);
+      } else {
+        // vertical
+        newGeom = new THREE.BoxGeometry(3, 4.2, 3);
+      }
+    }
+
+    cube.geometry.dispose();
+    cube.geometry = newGeom;
+  });
+
+  // 4. Poner imagen en la cara seleccionada
+  cube.material[freeFace].map = tex;
+  cube.material[freeFace].needsUpdate = true;
+
+  // 5. Girar hacia esa cara
+  const rotation = faceRotations[freeFace];
   gsap.to(cube.rotation, {
     x: rotation.x,
     y: rotation.y,
@@ -74,8 +130,9 @@ function showImageOnCube(imgSrc) {
     ease: "power2.inOut"
   });
 
-  currentFace = (currentFace + 1) % 6;
+  currentFace = (freeFace + 1) % 6;
 }
+
 
 
 function animate() {

@@ -102,13 +102,17 @@
 
 <!-- partidos -->
 <div id="partidos-panel">
-  <div class="partidos-container">
-    <div id="par-container">
-      <canvas id="partidos-canvas"></canvas>
-    </div>
+  <div id="par-container">
+    <canvas id="partidos-canvas"></canvas>
   </div>
+
+  <div class="partidos-container">
+    <!-- botones y lista se agregan aquí dinámicamente -->
+  </div>
+
   <button id="cerrarPartidos">Cerrar ✖</button>
 </div>
+
 
 <!-- Panel flotante de Historia -->
 <div id="historia-panel">
@@ -147,18 +151,28 @@
   <script src="script/navbar.js" defer></script>
   <script type="module" src="script/index.js"></script>
   <script type="module" src="script/galeria.js"></script>
-  
-  <!-- <script type="module">
-  import { abrirGaleria } from "./script/partidos.js";
 
-  document.getElementById("btnPartidos").addEventListener("click", () => {
-    abrirGaleria();
+  <script type="module">
+  import { moverCamaraGaleria, restaurarCamaraGaleria } from "./script/index.js";
+
+  const btnGaleria = document.getElementById("btnGaleria");
+  const cerrarGaleria = document.getElementById("cerrarGaleria");
+
+  // Abrir galería + mover cámara
+  btnGaleria.addEventListener("click", () => {
+    moverCamaraGaleria();
   });
-</script> -->
 
+  // Cerrar galería + restaurar cámara
+  cerrarGaleria.addEventListener("click", () => {
+    restaurarCamaraGaleria();
+  });
+</script>
+
+  
+<!-- llama a el modelo del estadio -->
 <script type="module">
   import { iniciarEstadio, cerrarEstadio } from './script/modelo.js';
-
   // Botón del menú (Estadio)
   const btnEstadio = document.getElementById('btnEstadio');
 btnEstadio.addEventListener('click', (e) => {
@@ -171,13 +185,7 @@ btnEstadio.addEventListener('click', (e) => {
 
 
 <!-- llamar a js del partidos -->
-<!-- <script type="module">
-    import { iniciarPartidos, iniciarStadium } from "./script/partidos.js";
 
-    iniciarPartidos();
-    moverCamaraPartidos();
-    abrirGaleria(); 
-</script> -->
 <script type="module">
   import { abrirPartidos, cerrarPartidosPanel } from "./script/partidos.js";
   import { moverCamaraPartidos, restaurarCamara } from "./script/index.js";

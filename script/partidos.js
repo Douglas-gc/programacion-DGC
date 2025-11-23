@@ -4,93 +4,153 @@ import { OrbitControls } from "https://esm.sh/three@0.161.0/examples/jsm/control
 let scene, camera, renderer, cube, controls;
 let galeriaAbierta = false;
 
-function init() {
-  const container = document.getElementById("par-container");
-  const canvas = document.getElementById("partidos-canvas");
+// Panel flotante
+const galeriaPanel = document.getElementById("partidos-panel");
 
-  // === Escena ===
+// Contenedor principal de partidos
+const partidosContainer = document.createElement("div");
+partidosContainer.className = "partidos-container";
+
+// Datos de partidos por día
+const partidosPorDia = {
+  lunes: [
+    { equipo1: 'Bolivar', logo1: 'img/bolivar.png', equipo2: 'Real Potosi', logo2: 'img/real_potosi.png', hora: '15:00', fecha: '2025-10-13' },
+    { equipo1: 'Oriente Petrolero', logo1: 'img/Oriente_Petrolero.png', equipo2: 'Blooming', logo2: 'img/blooming.png', hora: '17:30', fecha: '2025-10-13' }
+  ],
+  martes: [
+    { equipo1: 'Bolivar', logo1: 'img/bolivar.png', equipo2: 'Blooming', logo2: 'img/blooming.png', hora: '16:00', fecha: '2025-10-14' }
+  ],
+  miercoles: [
+    { equipo1: 'Oriente Petrolero', logo1: 'img/Oriente_Petrolero.png', equipo2: 'Blooming', logo2: 'img/blooming.png', hora: '18:00', fecha: '2025-10-15' }
+  ],
+  jueves: [
+    { equipo1: 'Real Potosi', logo1: 'img/real_potosi.png', equipo2: 'Bolivar', logo2: 'img/bolivar.png', hora: '19:30', fecha: '2025-10-16' }
+  ],
+  viernes: [
+    { equipo1: 'Real Potosi', logo1: 'img/real_potosi.png', equipo2: 'Oriente Petrolero', logo2: 'img/Oriente_Petrolero.png', hora: '20:00', fecha: '2025-10-17' }
+  ]
+};
+
+// Crear elementos de UI
+const diasSemanaDiv = document.createElement("div");
+diasSemanaDiv.id = "diasSemana";
+diasSemanaDiv.className = "dias-semana";
+
+const partidosListaDiv = document.createElement("div");
+partidosListaDiv.id = "partidosLista";
+partidosListaDiv.className = "partidos-lista";
+
+partidosContainer.appendChild(diasSemanaDiv);
+partidosContainer.appendChild(partidosListaDiv);
+galeriaPanel.appendChild(partidosContainer);
+
+// Botones de días
+const dias = ['lunes','martes','miercoles','jueves','viernes'];
+const hoy = new Date();
+const diaActual = dias[hoy.getDay()-1] || 'lunes';
+
+dias.forEach(dia => {
+  const btn = document.createElement("button");
+  btn.className = "dia-btn";
+  btn.textContent = dia.charAt(0).toUpperCase() + dia.slice(1);
+  if(dia === diaActual) btn.classList.add("active");
+  btn.addEventListener("click", () => mostrarPartidos(dia, btn));
+  diasSemanaDiv.appendChild(btn);
+});
+
+// Función para mostrar partidos
+function mostrarPartidos(dia, botonSeleccionado){
+  diasSemanaDiv.querySelectorAll(".dia-btn").forEach(b => b.classList.remove("active"));
+  botonSeleccionado.classList.add("active");
+
+  const lista = partidosPorDia[dia] || [];
+  partidosListaDiv.innerHTML = "";
+
+  if(lista.length === 0){
+    partidosListaDiv.innerHTML = `<p style="text-align:center;">No hay partidos programados para ${dia}.</p>`;
+    return;
+  }
+
+  lista.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "partido-card";
+    card.innerHTML = `
+      <div class="equipo">
+        <img src="${p.logo1}" alt="${p.equipo1}">
+        <div>${p.equipo1}</div>
+      </div>
+      <div class="vs">
+        VS
+        <div class="hora-fecha">${p.hora} - ${p.fecha}</div>
+      </div>
+      <div class="equipo">
+        <img src="${p.logo2}" alt="${p.equipo2}">
+        <div>${p.equipo2}</div>
+      </div>
+    `;
+    partidosListaDiv.appendChild(card);
+  });
+}
+
+// Mostrar automáticamente el día actual
+mostrarPartidos(diaActual, diasSemanaDiv.querySelector(".dia-btn.active"));
+
+// === Three.js ===
+function init() {
+  const container = document.createElement("div");
+  container.id = "par-container";
+  galeriaPanel.appendChild(container);
+
   scene = new THREE.Scene();
 
-  // === Cámara ===
-  camera = new THREE.PerspectiveCamera(
-    60,
-    container.clientWidth / container.clientHeight,
-    0.1,
-    1000
-  );
+  camera = new THREE.PerspectiveCamera(60, 800/560, 0.1, 1000);
   camera.position.z = 5;
 
-  // === Render ===
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setClearColor(0x000000, 0);
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(800,560);
+  container.appendChild(renderer.domElement);
 
-  // === Controles ===
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.enableZoom = false;
   controls.enablePan = false;
 
-  // === Luz ===
   const light = new THREE.AmbientLight(0xffffff, 1.2);
   scene.add(light);
 
-  // === Cubo simple (color) ===
-  const geometry = new THREE.BoxGeometry(3, 3, 3);
+  const geometry = new THREE.BoxGeometry(3,3,3);
   const material = new THREE.MeshStandardMaterial({ color: 0x3399ff });
   cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
 
-  window.addEventListener("resize", onWindowResize);
   animate();
 }
 
-// Rotación automática
-function animate() {
+function animate(){
   requestAnimationFrame(animate);
-
-  if (galeriaAbierta && renderer && scene && camera) {
+  if(galeriaAbierta){
     cube.rotation.y += 0.01;
     cube.rotation.x += 0.005;
-
     controls.update();
     renderer.render(scene, camera);
   }
 }
 
-function onWindowResize() {
-  const container = document.getElementById("par-container"); // <- typo corregido
-  if (!container) return;
-  camera.aspect = container.clientWidth / container.clientHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(container.clientWidth, container.clientHeight);
-}
-
-// === Mostrar / ocultar panel ===
-const galeriaPanel = document.getElementById("partidos-panel");
-const btnCerrar = document.getElementById("cerrarPartidos");
-
-// Solo abrir desde tu botón externo
-export function abrirPartidos() {
+// === Funciones para abrir/cerrar panel ===
+export function abrirPartidos(){
   galeriaPanel.style.display = "flex";
   galeriaAbierta = true;
-
-  if (!scene) init();
+  if(!scene) init();
 }
 
-// Exportar función de cierre para que otro módulo la invoque y/o para usar internamente
-export function cerrarPartidosPanel() {
+export function cerrarPartidosPanel(){
   galeriaPanel.style.display = "none";
   galeriaAbierta = false;
-
-  // emitir evento global para que index.js (o quien lo importe) pueda restaurar la cámara
   window.dispatchEvent(new Event('partidosClosed'));
 }
 
-// Listener local (mantener compatibilidad si se hace click directamente en el botón)
-if (btnCerrar) {
-  btnCerrar.addEventListener("click", () => {
-    cerrarPartidosPanel();
-  });
+// Botón de cerrar
+const btnCerrar = document.getElementById("cerrarPartidos");
+if(btnCerrar){
+  btnCerrar.addEventListener("click", cerrarPartidosPanel);
 }

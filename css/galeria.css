@@ -1,12 +1,12 @@
 /* === GALERÍA 3D ADAPTADA AL ESTADIO === */
 
-/* Panel flotante principal */
+/* Panel principal (ahora SIEMPRE cabe en pantalla) */
 #galeria-panel {
   position: fixed;
   top: 70px;
   left: 0;
-  width: 100%;
-  height: calc(100% - 80px);
+  width: 100vw;
+  height: calc(100vh - 70px);
   display: none;
   justify-content: center;
   align-items: flex-start;
@@ -14,18 +14,19 @@
   backdrop-filter: none;
   z-index: 999;
   color: white;
-  padding: 30px;
+  padding: 20px;
+  box-sizing: border-box;
   overflow: hidden;
 }
 
-/* Contenedor de toda la galería */
+/* Contenedor general */
 .galeria-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 40px;
-  max-width: 1200px;
-  margin: auto;
-  align-items: flex-start;
+  gap: 30px;
+  width: 100%;
+  height: 100%;
+  align-items: center;
   justify-content: center;
 }
 
@@ -34,14 +35,14 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 15px;
-  width: 250px;
-  max-height: 550px;
+  width: 240px;
+  max-height: 70vh; /* antes era fijo 550px → NO se adapta */
   overflow-y: auto;
   padding: 10px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-  
+  box-sizing: border-box;
 }
 
 #miniaturas img {
@@ -56,16 +57,18 @@
   box-shadow: 0 0 12px rgb(118, 151, 240);
 }
 
-/* Canvas de la galería */
+/* Contenedor del canvas 3D */
 #three-container {
-  width: 800px;
-  height: 560px;
+  width: min(800px, 60vw);  /* se adapta automáticamente */
+  height: min(560px, 60vh); /* antes era fijo → no entraba */
+  
   background: transparent;
   border-radius: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 #three-container canvas {
@@ -74,11 +77,11 @@
   display: block;
 }
 
-/* Botón de cerrar */
+/* Botón cerrar */
 #cerrarGaleria {
   position: absolute;
-  top: 100px;
-  right: 60px;
+  top: 80px;
+  right: 40px;
   background: crimson;
   color: white;
   font-weight: bold;
@@ -95,7 +98,7 @@
   transform: scale(1.05);
 }
 
-/* Scroll de miniaturas */
+/* Scroll miniaturas */
 #miniaturas::-webkit-scrollbar {
   width: 6px;
 }
@@ -113,21 +116,21 @@
 @media (max-width: 992px) {
   .galeria-container {
     flex-direction: column;
-    align-items: center;
   }
 
   #three-container {
-    width: 100%;
-    height: 400px;
+    width: 90vw;
+    height: 45vh;
   }
 
   #miniaturas {
-    width: 90%;
+    width: 90vw;
+    max-height: 30vh;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   }
 
   #cerrarGaleria {
-    top: 90px;
-    right: 30px;
+    top: 80px;
+    right: 20px;
   }
 }

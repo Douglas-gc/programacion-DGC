@@ -335,7 +335,55 @@ export function restaurarCamara() {
     });
   }
 }
+// --------------------------------------------------------------------
+// deslisamiento galeria
+// --------------------------------------------------------------------
+export function moverCamaraGaleria() {
+  if (!camera || !controls) return;
 
+  // Mueve la cámara a una posición más alta y cercana
+  gsap.to(controls.getObject().position, {
+    x: 0,
+    y: 8,
+    z: 15,
+    duration: 2.5,
+    ease: "power2.inOut"
+  });
+
+  // Ajustar inclinación
+  if (controls.getObject().children.length > 0) {
+    gsap.to(controls.getObject().children[0].rotation, {
+      x: -0.2,
+      duration: 2.5,
+      ease: "power2.inOut"
+    });
+  }
+}
+export function restaurarCamaraGaleria() {
+  if (!camera || !controls) return;
+
+  gsap.to(controls.getObject().position, {
+    x: initialCameraPos.x,
+    y: initialCameraPos.y,
+    z: initialCameraPos.z,
+    duration: 2,
+    ease: "power2.inOut"
+  });
+
+  gsap.to(controls.getObject().rotation, {
+    y: initialCameraRot.y,
+    duration: 2,
+    ease: "power2.inOut"
+  });
+
+  if (controls.getObject().children.length > 0) {
+    gsap.to(controls.getObject().children[0].rotation, {
+      x: initialCameraRot.x,
+      duration: 2,
+      ease: "power2.inOut"
+    });
+  }
+}
 
 
 
