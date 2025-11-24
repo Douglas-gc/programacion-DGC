@@ -1,7 +1,8 @@
 import * as THREE from "https://esm.sh/three@0.161.0";
 import { OrbitControls } from "https://esm.sh/three@0.161.0/examples/jsm/controls/OrbitControls.js";
+import { GLTFLoader } from "https://esm.sh/three@0.161.0/examples/jsm/loaders/GLTFLoader.js";
 
-let scene, camera, renderer, cube, controls;
+let scene, camera, renderer, modeloGLB, controls;
 let galeriaAbierta = false;
 
 // Panel flotante
@@ -59,7 +60,7 @@ dias.forEach(dia => {
 });
 
 // Función para mostrar partidos
-function mostrarPartidos(dia, botonSeleccionado){
+function mostrarPartidos(dia, botonSeleccionado) {
   diasSemanaDiv.querySelectorAll(".dia-btn").forEach(b => b.classList.remove("active"));
   botonSeleccionado.classList.add("active");
 
@@ -107,7 +108,7 @@ function init() {
   camera.position.z = 5;
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setSize(800,560);
+  renderer.setSize(800, 560);
   container.appendChild(renderer.domElement);
 
   controls = new OrbitControls(camera, renderer.domElement);
@@ -118,19 +119,37 @@ function init() {
   const light = new THREE.AmbientLight(0xffffff, 1.2);
   scene.add(light);
 
-  const geometry = new THREE.BoxGeometry(3,3,3);
-  const material = new THREE.MeshStandardMaterial({ color: 0x3399ff });
-  cube = new THREE.Mesh(geometry, material);
-  scene.add(cube);
+  // === CARGAR EL MODELO GLB ===
+  const loader = new GLTFLoader();
+  loader.load(
+    "models/balon.glb",  // <-- CAMBIA LA RUTA AQUÍ
+    function(gltf) {
+      modeloGLB = gltf.scene;
+
+      // Escala recomendada por si viene muy grande o pequeño
+      modeloGLB.scale.set(1.5, 1.5, 1.5);
+
+      // Centrar el modelo
+      modeloGLB.position.set(0, 0, 0);
+
+      scene.add(modeloGLB);
+    },
+    undefined,
+    function(error){ console.error("Error al cargar el modelo GLB:", error); }
+  );
 
   animate();
 }
 
 function animate(){
   requestAnimationFrame(animate);
+
   if(galeriaAbierta){
-    cube.rotation.y += 0.01;
-    cube.rotation.x += 0.005;
+    if(modeloGLB){
+      modeloGLB.rotation.y += 0.01;
+      modeloGLB.rotation.x += 0.005;
+    }
+
     controls.update();
     renderer.render(scene, camera);
   }
